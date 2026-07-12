@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idea Validator — Валидируй идею через AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ЗАГОЛОВОК -->
+        <header>
+            <h1>💡 Idea Validator</h1>
+            <p class="subtitle">Проверь идею через AI-анализ. 8 аспектов, честный вердикт.</p>
+        </header>
+
+        <!-- ФОРМА ВВОДА ИДЕИ -->
+        <div class="card">
+            <h2>Твоя идея</h2>
+            <form id="ideaForm">
+                <div class="form-group">
+                    <label for="idea">Опиши идею подробнее (минимум 50 символов)</label>
+                    <textarea id="idea" name="idea" placeholder="Пример: приложение для трекинга растений с AI-рекомендациями по уходу..."></textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 5000 символов</div>
+                </div>
+
+                <div class="error" id="errorMessage"></div>
+                <button type="submit" class="button" id="analyzeBtn">Анализировать идею</button>
+            </form>
+        </div>
+
+        <!-- РЕЗУЛЬТАТЫ АНАЛИЗА -->
+        <div class="card hidden" id="analysisCard">
+            <h2>Анализ твоей идеи</h2>
+            <div class="loading hidden" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p>Анализирую идею... Это займет 2-5 секунд</p>
+            </div>
+            <div class="analysis-container" id="analysisResult"></div>
+        </div>
+
+        <!-- ФОРМА ОТЗЫВА -->
+        <div class="card hidden" id="reviewFormCard">
+            <h2>Твой отзыв об анализе</h2>
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label for="reviewText">Что ты думаешь о результатах? (минимум 10 символов)</label>
+                    <textarea id="reviewText" name="reviewText" placeholder="Поделись своим мнением..."></textarea>
+                    <div class="char-count"><span id="reviewCharCount">0</span> / 1000 символов</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Оценка анализа</label>
+                    <div class="rating-input" id="ratingInput">
+                        <span class="star" data-rating="1" aria-label="1 звезда">★</span>
+                        <span class="star" data-rating="2" aria-label="2 звезды">★</span>
+                        <span class="star" data-rating="3" aria-label="3 звезды">★</span>
+                        <span class="star" data-rating="4" aria-label="4 звезды">★</span>
+                        <span class="star" data-rating="5" aria-label="5 звезд">★</span>
+                    </div>
+                </div>
+
+                <div class="error" id="reviewErrorMessage"></div>
+                <div class="success-message" id="reviewSuccessMessage">✓ Отзыв отправлен! Спасибо за фидбек.</div>
+                <button type="submit" class="button" id="submitReviewBtn">Отправить отзыв</button>
+            </form>
+        </div>
+
+        <!-- СПИСОК ОТЗЫВОВ -->
+        <div class="card hidden" id="reviewsCard">
+            <h2>Отзывы пользователей</h2>
+            <div class="reviews-list" id="reviewsList"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentIdeaId = null;
+        let currentRating = 0;
+
+        const ideaForm = document.getElementById('ideaForm');
+        const ideaInput = document.getElementById('idea');
+        const errorMessage = document.getElementById('errorMessage');
+        const analysisCard = document.getElementById('analysisCard');
+        const analysisResult = document.getElementById('analysisResult');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const reviewFormCard = document.getElementById('reviewFormCard');
+        const reviewsCard = document.getElementById('reviewsCard');
+        const reviewForm = document.getElementById('reviewForm');
+        const reviewText = document.getElementById('reviewText');
+        const reviewErrorMessage = document.getElementById('reviewErrorMessage');
+        const reviewSuccessMessage = document.getElementById('reviewSuccessMessage');
+        const charCount = document.getElementById('charCount');
+        const reviewCharCount = document.getElementById('reviewCharCount');
+
+        // Счётчик символов для идеи
+        ideaInput.addEventListener('input', () => {
+            charCount.textContent = ideaInput.value.length;
+        });
+
+        // Счётчик символов для отзыва
+        reviewText.addEventListener('input', () => {
+            reviewCharCount.textContent = reviewText.value.length;
+        });
+
+        // Рейтинг звёзды
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                currentRating = parseInt(star.dataset.rating);
+                document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.star').forEach(s => {
+                    if (parseInt(s.dataset.rating) <= currentRating) {
+                        s.classList.add('active');
+                    }
+                });
+            });
+
+            // Hover效果
+            star.addEventListener('mouseenter', () => {
+                const hoverRating = parseInt(star.dataset.rating);
+                document.querySelectorAll('.star').forEach(s => {
+                    if (parseInt(s.dataset.rating) <= hoverRating) {
+                        s.style.opacity = '1';
+                    } else {
+                        s.style.opacity = '0.5';
+                    }
+                });
+            });
+        });
+
+        document.getElementById('ratingInput').addEventListener('mouseleave', () => {
+            document.querySelectorAll('.star').forEach(s => {
+                s.style.opacity = '';
+            });
+        });
+
+        // Отправка идеи
+        ideaForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const idea = ideaInput.value.trim();
+
+            if (idea.length < 50) {
+                showError('Идея должна быть минимум 50 символов', errorMessage);
+                return;
+            }
+
+            hideError(errorMessage);
+            analysisCard.classList.remove('hidden');
+            loadingSpinner.classList.remove('hidden');
+            analysisResult.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idea })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'Ошибка анализа');
+                }
+
+                const data = await response.json();
+                currentIdeaId = data.idea_id;
+
+                loadingSpinner.classList.add('hidden');
+                displayAnalysis(data.analysis);
+                reviewFormCard.classList.remove('hidden');
+                await loadReviews();
+            } catch (err) {
+                loadingSpinner.classList.add('hidden');
+                showError(`Ошибка: ${err.message}`, errorMessage);
+            }
+        });
+
+        function displayAnalysis(text) {
+            const sections = text.split('###').slice(1);
+            let html = '';
+            const sectionTitles = [
+                "Market Size & Trends",
+                "Target Customer",
+                "Pain Points",
+                "Solution",
+                "Competition",
+                "MVP Scope",
+                "Pricing & Business Model",
+                "Key Risks & Assumptions"
+            ];
+
+            sections.forEach((section, index) => {
+                const lines = section.trim().split('\n');
+                const title = lines[0].trim();
+                const content = lines.slice(1).join('\n').trim();
+
+                html += `
+                    <div class="section" data-number="${String(index + 1).padStart(2, '0')}">
+                        <h3>${title}</h3>
+                        <p>${markdownToHtml(content)}</p>
+                    </div>
+                `;
+            });
+
+            analysisResult.innerHTML = html;
+
+            // Scroll to analysis
+            setTimeout(() => {
+                analysisCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function markdownToHtml(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^- (.*?)(?=\n|$)/gm, '<br>• $1');
+        }
+
+        // Отправка отзыва
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (currentRating === 0) {
+                showError('Выбери оценку', reviewErrorMessage);
+                return;
+            }
+
+            const text = reviewText.value.trim();
+            if (text.length < 10) {
+                showError('Отзыв должен быть минимум 10 символов', reviewErrorMessage);
+                return;
+            }
+
+            hideError(reviewErrorMessage);
+
+            try {
+                const response = await fetch('/api/reviews', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idea_id: currentIdeaId,
+                        text,
+                        rating: currentRating
+                    })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'Ошибка сохранения отзыва');
+                }
+
+                showSuccess('✓ Отзыв отправлен! Спасибо за фидбек.', reviewSuccessMessage);
+                reviewText.value = '';
+                reviewCharCount.textContent = '0';
+                currentRating = 0;
+                document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+                await loadReviews();
+
+                setTimeout(() => hideSuccess(reviewSuccessMessage), 4000);
+            } catch (err) {
+                showError(`Ошибка: ${err.message}`, reviewErrorMessage);
+            }
+        });
+
+        async function loadReviews() {
+            try {
+                const response = await fetch(`/api/reviews?idea_id=${currentIdeaId}`);
+                if (!response.ok) throw new Error('Ошибка загрузки отзывов');
+
+                const reviews = await response.json();
+                displayReviews(reviews);
+            } catch (err) {
+                console.error('Ошибка загрузки отзывов:', err);
+            }
+        }
+
+        function displayReviews(reviews) {
+            reviewsCard.classList.remove('hidden');
+            const reviewsList = document.getElementById('reviewsList');
+
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">Пока нет отзывов. Будь первым, поделись мнением!</p>';
+                return;
+            }
+
+            reviewsList.innerHTML = reviews.map(review => {
+                const date = new Date(review.created_at).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                return `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                            <span class="review-date">${date}</span>
+                        </div>
+                        <p class="review-text">${escapeHtml(review.text)}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showError(msg, element) {
+            element.textContent = msg;
+            element.classList.add('show');
+        }
+
+        function hideError(element) {
+            element.classList.remove('show');
+        }
+
+        function showSuccess(msg, element) {
+            element.textContent = msg;
+            element.classList.add('show');
+        }
+
+        function hideSuccess(element) {
+            element.classList.remove('show');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

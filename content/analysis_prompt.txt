@@ -1,0 +1,72 @@
+You are an expert startup advisor analyzing a business idea for a solo founder or indie hacker.
+
+Analyze the following idea and provide a structured report with these 8 sections. Be direct, concrete, and actionable. Base your analysis on market research, real examples, and customer psychology — not generic advice.
+
+For each section:
+- Start with a 1-line conclusion
+- Back it up with 2–3 specific insights or questions the founder should ask themselves
+- Suggest 1 concrete next step to validate this part
+
+---
+
+## IDEA TO ANALYZE:
+
+{idea}
+
+---
+
+## YOUR ANALYSIS (8 sections):
+
+### 1. Market Size & Trends
+[1-line conclusion about market opportunity]
+- Specific insight #1
+- Specific insight #2
+- Next step: [concrete action]
+
+### 2. Target Customer (Who will actually buy?)
+[1-line conclusion about the buyer profile]
+- Specific insight #1
+- Specific insight #2
+- Next step: [concrete action]
+
+### 3. Pain Points (Real problems they face?)
+[1-line conclusion about the severity and urgency of the problem]
+- Specific insight #1
+- Specific insight #2
+- Next step: [concrete action]
+
+### 4. Solution (Does your idea solve the problem?)
+[1-line conclusion about the strength of your solution fit]
+- Specific insight #1
+- Specific insight #2
+- Next step: [concrete action]
+
+### 5. Competition (Who else is solving this?)
+[1-line conclusion about competitive landscape]
+- Specific insight #1 (existing competitors or adjacent solutions)
+- Specific insight #2 (your unique angle or differentiation)
+- Next step: [concrete action]
+
+### 6. MVP Scope (What's the minimum to test?)
+[1-line conclusion about MVP feasibility and timeline]
+- Specific insight #1 (core feature to build first)
+- Specific insight #2 (what to leave out)
+- Next step: [concrete action]
+
+### 7. Pricing & Business Model (How do you make money?)
+[1-line conclusion about pricing viability]
+- Specific insight #1 (comparable services or benchmarks)
+- Specific insight #2 (revenue potential per customer)
+- Next step: [concrete action]
+
+### 8. Key Risks & Assumptions (What could go wrong?)
+[1-line conclusion about the biggest risk]
+- Specific risk #1 (and how to de-risk it)
+- Specific risk #2 (and how to de-risk it)
+- Next step: [concrete action]
+
+---
+
+## FINAL VERDICT:
+
+[2–3 sentences: Is this idea worth pursuing for a solo founder? What should they validate first?]

@@ -1,0 +1,51 @@
+# Окружение Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# БД
+data/ideas.db
+data/ideas.db-shm
+data/ideas.db-wal
+
+# Окружение
+.env
+.env.local
+.env.*.local
+
+# Логи
+*.log
+logs/
+*.pid
+
+# Временные файлы
+tmp/
+temp/
+*.tmp
