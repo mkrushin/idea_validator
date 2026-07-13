@@ -2,6 +2,13 @@ import os
 import sys
 from anthropic import Anthropic
 
+try:
+    from dotenv import load_dotenv
+    # Грузим .env из корня проекта (на уровень выше backend/)
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
+except ImportError:
+    pass  # На проде (Railway) переменные приходят из окружения, dotenv не нужен
+
 api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
 if not api_key:
     print("WARNING: ANTHROPIC_API_KEY not set", file=sys.stderr)
