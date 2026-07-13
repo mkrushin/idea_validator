@@ -32,9 +32,29 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 async def root():
     """Главная страница"""
     html_path = BASE_DIR / "frontend" / "templates" / "index.html"
-    if not html_path.exists():
-        raise HTTPException(status_code=500, detail=f"index.html не найден: {html_path}")
-    return FileResponse(str(html_path), media_type="text/html")
+    try:
+        if not html_path.exists():
+            raise HTTPException(status_code=500, detail=f"index.html не найден: {html_path}")
+        return FileResponse(str(html_path), media_type="text/html")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"{type(e).__name__}: {e} (path={html_path})")
+
+@app.get("/debug")
+async def debug():
+    """Диагностика путей в контейнере (временный эндпоинт)"""
+    frontend = BASE_DIR / "frontend"
+    info = {
+        "base_dir": str(BASE_DIR),
+        "cwd": os.getcwd(),
+        "resolved_file": str(Path(__file__).resolve()),
+        "index_exists": (frontend / "templates" / "index.html").exists(),
+        "style_exists": (frontend / "static" / "style.css").exists(),
+        "base_dir_contents": sorted(os.listdir(BASE_DIR)) if BASE_DIR.exists() else "BASE_DIR НЕ существует",
+        "frontend_contents": sorted(os.listdir(frontend)) if frontend.exists() else "frontend/ НЕ существует",
+    }
+    return info
 
 @app.post("/api/analyze")
 async def analyze(request: IdeaRequest):
