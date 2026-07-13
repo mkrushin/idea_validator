@@ -26,11 +26,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 @app.get("/")
 async def root():
     """Главная страница"""
-    html_path = Path(__file__).parent.parent / "frontend" / "templates" / "index.html"
-    return FileResponse(html_path, media_type="text/html")
+    html_path = BASE_DIR / "frontend" / "templates" / "index.html"
+    if not html_path.exists():
+        raise HTTPException(status_code=500, detail=f"index.html не найден: {html_path}")
+    return FileResponse(str(html_path), media_type="text/html")
 
 @app.post("/api/analyze")
 async def analyze(request: IdeaRequest):
@@ -110,7 +114,7 @@ async def create_review(request: ReviewRequest):
 @app.get("/static/{file_path:path}")
 async def static_files(file_path: str):
     """Раздача статических файлов"""
-    static_path = Path(__file__).parent.parent / "frontend" / "static" / file_path
+    static_path = BASE_DIR / "frontend" / "static" / file_path
     if static_path.exists():
-        return FileResponse(static_path)
+        return FileResponse(str(static_path))
     raise HTTPException(status_code=404, detail="Файл не найден")

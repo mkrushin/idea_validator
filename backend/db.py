@@ -6,6 +6,11 @@ from typing import Optional, List, Dict, Any
 DATABASE_URL = "data/ideas.db"
 
 def get_db_path():
+    # На проде (Railway) указывай DATABASE_PATH на примонтированный Volume,
+    # чтобы отзывы не сбрасывались при редеплое. Локально — дефолт в data/.
+    env_path = os.getenv("DATABASE_PATH")
+    if env_path:
+        return env_path
     return os.path.join(os.path.dirname(__file__), "..", DATABASE_URL)
 
 def init_db():
