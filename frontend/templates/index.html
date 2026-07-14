@@ -214,6 +214,8 @@
         function markdownToHtml(text) {
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^---+\s*$/gm, '<hr class="verdict-divider">')
+                .replace(/^##\s+(.*)$/gm, '<strong class="verdict-title">$1</strong>')
                 .replace(/\n\n/g, '</p><p>')
                 .replace(/^- (.*?)(?=\n|$)/gm, '<br>• $1');
         }
