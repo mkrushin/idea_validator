@@ -41,6 +41,14 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS waitlist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -92,6 +100,22 @@ def save_review(idea_id: int, review_text: str, rating: int) -> int:
     conn.close()
 
     return review_id
+
+def save_waitlist_email(email: str) -> bool:
+    """Сохранить email в waitlist. Возвращает False, если email уже есть."""
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("INSERT INTO waitlist (email) VALUES (?)", (email,))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False  # email уже в списке
+    finally:
+        conn.close()
+
 
 def get_reviews(idea_id: Optional[int] = None, limit: int = 10) -> List[Dict[str, Any]]:
     """Получить отзывы (все или для конкретной идеи)"""

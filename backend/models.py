@@ -25,3 +25,7 @@ class ReviewResponse(BaseModel):
     text: str
     rating: int
     created_at: str
+
+
+class WaitlistRequest(BaseModel):
+    email: str = Field(..., pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$", max_length=254)

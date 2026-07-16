@@ -7,8 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse
-from db import init_db, save_idea, save_review, get_reviews, get_idea
+from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse, WaitlistRequest
+from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email
 from claude_api import analyze_idea
 
 app = FastAPI(title="Idea Validator")
@@ -115,6 +115,13 @@ async def create_review(request: ReviewRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка сохранения отзыва: {str(e)}")
+
+@app.post("/api/waitlist")
+async def join_waitlist(request: WaitlistRequest):
+    """Добавить email в список ожидания живого AI-анализа"""
+    is_new = save_waitlist_email(request.email.strip().lower())
+    return {"ok": True, "already_joined": not is_new}
+
 
 @app.get("/static/{file_path:path}")
 async def static_files(file_path: str):

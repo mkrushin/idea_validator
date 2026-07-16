@@ -11,10 +11,16 @@
 </head>
 <body>
     <div class="container">
-        <!-- ЗАГОЛОВОК -->
-        <header>
-            <h1>💡 Idea Validator</h1>
-            <p class="subtitle">Проверь идею через AI-анализ. 8 аспектов, честный вердикт.</p>
+        <!-- HERO -->
+        <header class="hero">
+            <div class="brand">💡 Idea Validator</div>
+            <h1>Не строй то, что <span class="accent">никому не нужно</span>.</h1>
+            <p class="subtitle">Честный AI-разбор идеи за 30 секунд — прежде чем потратишь полгода. 8 аспектов, проверенные фреймворки, вердикт GO / PIVOT / KILL.</p>
+            <div class="badges">
+                <span class="badge">⚡ 30 секунд</span>
+                <span class="badge">🆓 Бесплатно</span>
+                <span class="badge">🔓 Без регистрации</span>
+            </div>
         </header>
 
         <!-- ФОРМА ВВОДА ИДЕИ -->
@@ -25,12 +31,68 @@
                     <label for="idea">Опиши идею подробнее (минимум 50 символов)</label>
                     <textarea id="idea" name="idea" placeholder="Пример: приложение для трекинга растений с AI-рекомендациями по уходу..."></textarea>
                     <div class="char-count"><span id="charCount">0</span> / 5000 символов</div>
+                    <div class="examples">
+                        <span class="examples-label">Или начни с примера:</span>
+                        <button type="button" class="example-chip">B2B SaaS для авто-саммари созвонов в Zoom и Google Meet</button>
+                        <button type="button" class="example-chip">Маркетплейс локальных репетиторов с онлайн-оплатой</button>
+                        <button type="button" class="example-chip">Chrome-расширение для фокуса и продуктивности</button>
+                        <button type="button" class="example-chip">Приложение для трекинга растений с AI-уходом</button>
+                    </div>
                 </div>
 
                 <div class="error" id="errorMessage"></div>
                 <button type="submit" class="button" id="analyzeBtn">Анализировать идею</button>
             </form>
         </div>
+
+        <!-- КАК ЭТО РАБОТАЕТ -->
+        <section class="sell-block">
+            <h2 class="sell-title">Как это работает</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h3>Опиши идею</h3>
+                    <p>Одним абзацем, без питч-дека и бизнес-плана. Просто идея.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h3>AI разбирает по 8 аспектам</h3>
+                    <p>Через проверенные фреймворки: The Mom Test, Jobs-to-be-Done, TAM/SAM/SOM, юнит-экономика.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h3>Получаешь честный вердикт</h3>
+                    <p>GO, PIVOT или KILL — с причинами и тем, что проверить дальше своими руками.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ЧТО ТЫ ПОЛУЧИШЬ -->
+        <section class="sell-block">
+            <h2 class="sell-title">Что ты получишь</h2>
+            <p class="sell-lead">Разбор по 8 аспектам — видно глубину ещё до того, как ты ввёл идею.</p>
+            <div class="aspects">
+                <div class="aspect"><span class="aspect-num">01</span>Market Size &amp; Trends</div>
+                <div class="aspect"><span class="aspect-num">02</span>Target Customer</div>
+                <div class="aspect"><span class="aspect-num">03</span>Pain Points</div>
+                <div class="aspect"><span class="aspect-num">04</span>Solution</div>
+                <div class="aspect"><span class="aspect-num">05</span>Competition</div>
+                <div class="aspect"><span class="aspect-num">06</span>MVP Scope</div>
+                <div class="aspect"><span class="aspect-num">07</span>Pricing &amp; Business Model</div>
+                <div class="aspect"><span class="aspect-num">08</span>Key Risks &amp; Assumptions</div>
+            </div>
+        </section>
+
+        <!-- ПОЧЕМУ НЕ CHATGPT -->
+        <section class="sell-block why">
+            <h2 class="sell-title">Почему не просто спросить ChatGPT</h2>
+            <p class="why-text">ChatGPT хвалит любую идею и идёт дальше — это не валидация. Idea Validator режет правду через проверенные фреймворки и даёт вердикт, а не комплимент.</p>
+            <div class="why-points">
+                <span class="why-point">✓ Честно, без «звучит отлично!»</span>
+                <span class="why-point">✓ Бесплатно, без регистрации</span>
+                <span class="why-point">✓ Твои идеи никуда не публикуются</span>
+            </div>
+        </section>
 
         <!-- РЕЗУЛЬТАТЫ АНАЛИЗА -->
         <div class="card hidden" id="analysisCard">
@@ -73,6 +135,18 @@
         <div class="card hidden" id="reviewsCard">
             <h2>Отзывы пользователей</h2>
             <div class="reviews-list" id="reviewsList"></div>
+        </div>
+
+        <!-- WAITLIST -->
+        <div class="card" id="waitlistCard">
+            <h2>Хочешь больше?</h2>
+            <p class="waitlist-text">Оставь email — напишу, когда появятся новые фичи: план валидации, живые данные рынка и разбор конкурентов.</p>
+            <form id="waitlistForm" class="waitlist-form">
+                <input type="email" id="waitlistEmail" name="email" placeholder="you@example.com" required>
+                <button type="submit" class="button" id="waitlistBtn">Оставить email</button>
+            </form>
+            <div class="error" id="waitlistError"></div>
+            <div class="success-message" id="waitlistSuccess">✓ Готово! Спасибо, напишу как будут новости.</div>
         </div>
     </div>
 
@@ -328,6 +402,46 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        // Чипы-примеры: клик подставляет текст в поле идеи
+        document.querySelectorAll('.example-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                ideaInput.value = chip.textContent;
+                charCount.textContent = ideaInput.value.length;
+                ideaInput.focus();
+            });
+        });
+
+        // Waitlist
+        const waitlistForm = document.getElementById('waitlistForm');
+        const waitlistEmail = document.getElementById('waitlistEmail');
+        const waitlistError = document.getElementById('waitlistError');
+        const waitlistSuccess = document.getElementById('waitlistSuccess');
+
+        waitlistForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError(waitlistError);
+            const email = waitlistEmail.value.trim();
+
+            try {
+                const response = await fetch('/api/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Проверь, что email введён правильно');
+                }
+
+                const data = await response.json();
+                showSuccess(data.already_joined ? '✓ Ты уже в списке — спасибо!' : '✓ Готово! Спасибо, напишу как будут новости.', waitlistSuccess);
+                waitlistEmail.value = '';
+                setTimeout(() => hideSuccess(waitlistSuccess), 4000);
+            } catch (err) {
+                showError(`Ошибка: ${err.message}`, waitlistError);
+            }
+        });
     </script>
 </body>
 </html>
