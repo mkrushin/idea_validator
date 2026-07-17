@@ -658,3 +658,15 @@ strong {
         width: 100%;
     }
 }
+
+/* Fake-door оффер */
+.offer-badge { display: inline-block; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--bright-emerald, #00D084); margin-bottom: 8px; }
+.offer-price { color: var(--bright-emerald, #00D084); }
+.offer-lead { color: var(--text-secondary, #A1A5B0); margin-bottom: 20px; }
+.offer-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+.offer-col h3 { font-size: 1rem; margin-bottom: 8px; }
+.offer-col ul { margin: 0; padding-left: 18px; color: var(--text-secondary, #A1A5B0); }
+.offer-col li { margin-bottom: 6px; }
+.offer-email { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border, #2D3447); }
+.offer-email-note { color: var(--text-secondary, #A1A5B0); margin-bottom: 12px; }
+@media (max-width: 600px) { .offer-cols { grid-template-columns: 1fr; } }

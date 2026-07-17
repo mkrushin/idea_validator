@@ -104,6 +104,42 @@
             <div class="analysis-container" id="analysisResult"></div>
         </div>
 
+        <!-- ОФФЕР (fake-door) -->
+        <div class="card hidden" id="offerCard">
+            <div class="offer-badge">Следующий шаг</div>
+            <h2>Данные и план проверки за <span class="offer-price">$7</span></h2>
+            <p class="offer-lead">Разбор показал, на что стоит смотреть. Дальше не гадать, а собрать факты и поговорить с людьми. За $7 соберу тебе пакет под твою идею:</p>
+            <div class="offer-cols">
+                <div class="offer-col">
+                    <h3>Живые данные из сети</h3>
+                    <ul>
+                        <li>Кто уже это делает и сколько берёт</li>
+                        <li>На что жалуются клиенты в реальных отзывах</li>
+                        <li>Конкретные сообщества, где сидит твоя аудитория</li>
+                    </ul>
+                </div>
+                <div class="offer-col">
+                    <h3>План проверки</h3>
+                    <ul>
+                        <li>Кого спросить и 5 вопросов по The Mom Test</li>
+                        <li>Готовый шаблон, чтобы позвать на разговор</li>
+                        <li>Пороги «идти / стоп» и чеклист-трекер</li>
+                    </ul>
+                </div>
+            </div>
+            <button type="button" class="button" id="offerCtaBtn">Получить план за $7</button>
+
+            <div class="offer-email hidden" id="offerEmailBlock">
+                <p class="offer-email-note">Это пока в разработке, денег не беру. Оставь email: напишу первым, когда будет готово, и дам попробовать бесплатно.</p>
+                <form id="offerEmailForm" class="waitlist-form">
+                    <input type="email" id="offerEmail" name="email" placeholder="you@example.com" required>
+                    <button type="submit" class="button" id="offerEmailBtn">Уведомить меня</button>
+                </form>
+                <div class="error" id="offerEmailError"></div>
+                <div class="success-message" id="offerEmailSuccess">✓ Записал. Напишу, как только будет готово.</div>
+            </div>
+        </div>
+
         <!-- ФОРМА ОТЗЫВА -->
         <div class="card hidden" id="reviewFormCard">
             <h2>Твой отзыв об анализе</h2>
@@ -137,20 +173,31 @@
             <div class="reviews-list" id="reviewsList"></div>
         </div>
 
-        <!-- WAITLIST -->
-        <div class="card" id="waitlistCard">
-            <h2>Хочешь больше?</h2>
-            <p class="waitlist-text">Оставь email — напишу, когда появятся новые фичи: план валидации, живые данные рынка и разбор конкурентов.</p>
-            <form id="waitlistForm" class="waitlist-form">
-                <input type="email" id="waitlistEmail" name="email" placeholder="you@example.com" required>
-                <button type="submit" class="button" id="waitlistBtn">Оставить email</button>
-            </form>
-            <div class="error" id="waitlistError"></div>
-            <div class="success-message" id="waitlistSuccess">✓ Готово! Спасибо, напишу как будут новости.</div>
-        </div>
     </div>
 
     <script>
+        // Анонимный session_id (UUID в localStorage) — только для метрик, без PII
+        function getSessionId() {
+            let sid = localStorage.getItem('iv_session_id');
+            if (!sid) {
+                sid = (crypto.randomUUID && crypto.randomUUID()) ||
+                      ('s-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+                localStorage.setItem('iv_session_id', sid);
+            }
+            return sid;
+        }
+        const SESSION_ID = getSessionId();
+
+        function track(eventType, meta) {
+            fetch('/api/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: SESSION_ID, event_type: eventType, meta: meta || null })
+            }).catch(() => {});  // аналитика не должна ломать UX
+        }
+
+        track('visit');
+
         let currentIdeaId = null;
         let currentRating = 0;
 
@@ -229,7 +276,7 @@
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idea })
+                    body: JSON.stringify({ idea, session_id: SESSION_ID })
                 });
 
                 if (!response.ok) {
@@ -242,6 +289,7 @@
 
                 loadingSpinner.classList.add('hidden');
                 displayAnalysis(data.analysis);
+                document.getElementById('offerCard').classList.remove('hidden');
                 reviewFormCard.classList.remove('hidden');
                 await loadReviews();
             } catch (err) {
@@ -412,34 +460,37 @@
             });
         });
 
-        // Waitlist
-        const waitlistForm = document.getElementById('waitlistForm');
-        const waitlistEmail = document.getElementById('waitlistEmail');
-        const waitlistError = document.getElementById('waitlistError');
-        const waitlistSuccess = document.getElementById('waitlistSuccess');
+        // Fake-door оффер
+        const offerCtaBtn = document.getElementById('offerCtaBtn');
+        const offerEmailBlock = document.getElementById('offerEmailBlock');
+        const offerEmailForm = document.getElementById('offerEmailForm');
+        const offerEmail = document.getElementById('offerEmail');
+        const offerEmailError = document.getElementById('offerEmailError');
+        const offerEmailSuccess = document.getElementById('offerEmailSuccess');
 
-        waitlistForm.addEventListener('submit', async (e) => {
+        offerCtaBtn.addEventListener('click', () => {
+            track('cta_click', { idea_id: currentIdeaId });
+            offerEmailBlock.classList.remove('hidden');
+            offerEmail.focus();
+        });
+
+        offerEmailForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            hideError(waitlistError);
-            const email = waitlistEmail.value.trim();
-
+            hideError(offerEmailError);
+            const email = offerEmail.value.trim();
             try {
                 const response = await fetch('/api/waitlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email, session_id: SESSION_ID })
                 });
-
-                if (!response.ok) {
-                    throw new Error('Проверь, что email введён правильно');
-                }
-
+                if (!response.ok) throw new Error('Проверь, что email введён правильно');
                 const data = await response.json();
-                showSuccess(data.already_joined ? '✓ Ты уже в списке — спасибо!' : '✓ Готово! Спасибо, напишу как будут новости.', waitlistSuccess);
-                waitlistEmail.value = '';
-                setTimeout(() => hideSuccess(waitlistSuccess), 4000);
+                showSuccess(data.already_joined ? '✓ Ты уже в списке, спасибо!' : '✓ Записал. Напишу, как только будет готово.', offerEmailSuccess);
+                offerEmail.value = '';
+                setTimeout(() => hideSuccess(offerEmailSuccess), 4000);
             } catch (err) {
-                showError(`Ошибка: ${err.message}`, waitlistError);
+                showError(`Ошибка: ${err.message}`, offerEmailError);
             }
         });
     </script>
