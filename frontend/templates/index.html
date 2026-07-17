@@ -6,71 +6,86 @@
     <title>Idea Validator — Валидируй идею через AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <meta name="theme-color" content="#0F172E">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
+        <!-- ЯЗЫК -->
+        <div class="lang-bar">
+            <button type="button" class="lang-btn" data-lang="ru">RU</button>
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
+
         <!-- HERO -->
         <header class="hero">
             <div class="brand">💡 Idea Validator</div>
-            <h1>Не строй то, что <span class="accent">никому не нужно</span>.</h1>
-            <p class="subtitle">Честный AI-разбор идеи за 30 секунд — прежде чем потратишь полгода. 8 аспектов, проверенные фреймворки, вердикт GO / PIVOT / KILL.</p>
+            <h1 data-i18n-html="hero.h1">Не строй то, что <span class="accent">никому не нужно</span>.</h1>
+            <div class="verdict-stamp">
+                <span class="v-kill">KILL</span>
+                <span class="v-sep">/</span>
+                <span class="v-pivot">PIVOT</span>
+                <span class="v-sep">/</span>
+                <span class="v-proceed">PROCEED</span>
+            </div>
+            <p class="subtitle" data-i18n="hero.sub">Честный AI-разбор идеи за 30 секунд — прежде чем потратишь полгода. 8 аспектов, проверенные фреймворки, один прямой вердикт.</p>
             <div class="badges">
-                <span class="badge">⚡ 30 секунд</span>
-                <span class="badge">🆓 Бесплатно</span>
-                <span class="badge">🔓 Без регистрации</span>
+                <span class="badge" data-i18n="hero.badge1">⚡ 30 секунд</span>
+                <span class="badge" data-i18n="hero.badge2">🆓 Бесплатно</span>
+                <span class="badge" data-i18n="hero.badge3">🔓 Без регистрации</span>
             </div>
         </header>
 
         <!-- ФОРМА ВВОДА ИДЕИ -->
         <div class="card">
-            <h2>Твоя идея</h2>
+            <h2 data-i18n="form.title">Твоя идея</h2>
             <form id="ideaForm">
                 <div class="form-group">
-                    <label for="idea">Опиши идею подробнее (минимум 50 символов)</label>
-                    <textarea id="idea" name="idea" placeholder="Пример: приложение для трекинга растений с AI-рекомендациями по уходу..."></textarea>
-                    <div class="char-count"><span id="charCount">0</span> / 5000 символов</div>
+                    <label for="idea" data-i18n="form.label">Опиши идею подробнее (минимум 50 символов)</label>
+                    <textarea id="idea" name="idea" data-i18n-ph="form.placeholder" placeholder="Пример: приложение для трекинга растений с AI-рекомендациями по уходу..."></textarea>
+                    <div class="char-count"><span id="charCount">0</span><span data-i18n="form.charsuffix"> / 5000 символов</span></div>
                     <div class="examples">
-                        <span class="examples-label">Или начни с примера:</span>
-                        <button type="button" class="example-chip">B2B SaaS для авто-саммари созвонов в Zoom и Google Meet</button>
-                        <button type="button" class="example-chip">Маркетплейс локальных репетиторов с онлайн-оплатой</button>
-                        <button type="button" class="example-chip">Chrome-расширение для фокуса и продуктивности</button>
-                        <button type="button" class="example-chip">Приложение для трекинга растений с AI-уходом</button>
+                        <span class="examples-label" data-i18n="form.exlabel">Или начни с примера:</span>
+                        <button type="button" class="example-chip" data-i18n="form.ex1">B2B SaaS для авто-саммари созвонов в Zoom и Google Meet</button>
+                        <button type="button" class="example-chip" data-i18n="form.ex2">Маркетплейс локальных репетиторов с онлайн-оплатой</button>
+                        <button type="button" class="example-chip" data-i18n="form.ex3">Chrome-расширение для фокуса и продуктивности</button>
+                        <button type="button" class="example-chip" data-i18n="form.ex4">Приложение для трекинга растений с AI-уходом</button>
                     </div>
                 </div>
 
                 <div class="error" id="errorMessage"></div>
-                <button type="submit" class="button" id="analyzeBtn">Анализировать идею</button>
+                <button type="submit" class="button" id="analyzeBtn" data-i18n="form.submit">Анализировать идею</button>
             </form>
         </div>
 
         <!-- КАК ЭТО РАБОТАЕТ -->
         <section class="sell-block">
-            <h2 class="sell-title">Как это работает</h2>
+            <h2 class="sell-title" data-i18n="how.title">Как это работает</h2>
             <div class="steps">
                 <div class="step">
                     <div class="step-num">1</div>
-                    <h3>Опиши идею</h3>
-                    <p>Одним абзацем, без питч-дека и бизнес-плана. Просто идея.</p>
+                    <h3 data-i18n="how.s1t">Опиши идею</h3>
+                    <p data-i18n="how.s1p">Одним абзацем, без питч-дека и бизнес-плана. Просто идея.</p>
                 </div>
                 <div class="step">
                     <div class="step-num">2</div>
-                    <h3>AI разбирает по 8 аспектам</h3>
-                    <p>Через проверенные фреймворки: The Mom Test, Jobs-to-be-Done, TAM/SAM/SOM, юнит-экономика.</p>
+                    <h3 data-i18n="how.s2t">AI разбирает по 8 аспектам</h3>
+                    <p data-i18n="how.s2p">Через проверенные фреймворки: The Mom Test, Jobs-to-be-Done, TAM/SAM/SOM, юнит-экономика.</p>
                 </div>
                 <div class="step">
                     <div class="step-num">3</div>
-                    <h3>Получаешь честный вердикт</h3>
-                    <p>GO, PIVOT или KILL — с причинами и тем, что проверить дальше своими руками.</p>
+                    <h3 data-i18n="how.s3t">Получаешь честный вердикт</h3>
+                    <p data-i18n="how.s3p">GO, PIVOT или KILL — с причинами и тем, что проверить дальше своими руками.</p>
                 </div>
             </div>
         </section>
 
         <!-- ЧТО ТЫ ПОЛУЧИШЬ -->
         <section class="sell-block">
-            <h2 class="sell-title">Что ты получишь</h2>
-            <p class="sell-lead">Разбор по 8 аспектам — видно глубину ещё до того, как ты ввёл идею.</p>
+            <h2 class="sell-title" data-i18n="get.title">Что ты получишь</h2>
+            <p class="sell-lead" data-i18n="get.lead">Разбор по 8 аспектам — видно глубину ещё до того, как ты ввёл идею.</p>
             <div class="aspects">
                 <div class="aspect"><span class="aspect-num">01</span>Market Size &amp; Trends</div>
                 <div class="aspect"><span class="aspect-num">02</span>Target Customer</div>
@@ -85,98 +100,226 @@
 
         <!-- ПОЧЕМУ НЕ CHATGPT -->
         <section class="sell-block why">
-            <h2 class="sell-title">Почему не просто спросить ChatGPT</h2>
-            <p class="why-text">ChatGPT хвалит любую идею и идёт дальше — это не валидация. Idea Validator режет правду через проверенные фреймворки и даёт вердикт, а не комплимент.</p>
+            <h2 class="sell-title" data-i18n="why.title">Почему не просто спросить ChatGPT</h2>
+            <p class="why-text" data-i18n="why.text">ChatGPT хвалит любую идею и идёт дальше — это не валидация. Idea Validator режет правду через проверенные фреймворки и даёт вердикт, а не комплимент.</p>
             <div class="why-points">
-                <span class="why-point">✓ Честно, без «звучит отлично!»</span>
-                <span class="why-point">✓ Бесплатно, без регистрации</span>
-                <span class="why-point">✓ Твои идеи никуда не публикуются</span>
+                <span class="why-point" data-i18n="why.p1">✓ Честно, без «звучит отлично!»</span>
+                <span class="why-point" data-i18n="why.p2">✓ Бесплатно, без регистрации</span>
+                <span class="why-point" data-i18n="why.p3">✓ Твои идеи никуда не публикуются</span>
             </div>
         </section>
 
         <!-- РЕЗУЛЬТАТЫ АНАЛИЗА -->
         <div class="card hidden" id="analysisCard">
-            <h2>Анализ твоей идеи</h2>
+            <h2 data-i18n="analysis.title">Анализ твоей идеи</h2>
             <div class="loading hidden" id="loadingSpinner">
                 <div class="spinner"></div>
-                <p>Анализирую идею... первые строки появятся через несколько секунд, полный разбор — до минуты</p>
+                <p data-i18n="analysis.loading">Анализирую идею... первые строки появятся через несколько секунд, полный разбор — до минуты</p>
             </div>
             <div class="analysis-container" id="analysisResult"></div>
         </div>
 
         <!-- ОФФЕР (fake-door) -->
         <div class="card hidden" id="offerCard">
-            <div class="offer-badge">Следующий шаг</div>
-            <h2>Данные и план проверки за <span class="offer-price">$7</span></h2>
-            <p class="offer-lead">Разбор показал, на что стоит смотреть. Дальше не гадать, а собрать факты и поговорить с людьми. За $7 соберу тебе пакет под твою идею:</p>
+            <div class="offer-badge" data-i18n="offer.badge">Следующий шаг</div>
+            <h2 data-i18n-html="offer.title">Данные и план проверки за <span class="offer-price">$7</span></h2>
+            <p class="offer-lead" data-i18n="offer.lead">Разбор показал, на что стоит смотреть. Дальше не гадать, а собрать факты и поговорить с людьми. За $7 соберу тебе пакет под твою идею:</p>
             <div class="offer-cols">
                 <div class="offer-col">
-                    <h3>Живые данные из сети</h3>
+                    <h3 data-i18n="offer.c1t">Живые данные из сети</h3>
                     <ul>
-                        <li>Кто уже это делает и сколько берёт</li>
-                        <li>На что жалуются клиенты в реальных отзывах</li>
-                        <li>Конкретные сообщества, где сидит твоя аудитория</li>
+                        <li data-i18n="offer.c1a">Кто уже это делает и сколько берёт</li>
+                        <li data-i18n="offer.c1b">На что жалуются клиенты в реальных отзывах</li>
+                        <li data-i18n="offer.c1c">Конкретные сообщества, где сидит твоя аудитория</li>
                     </ul>
                 </div>
                 <div class="offer-col">
-                    <h3>План проверки</h3>
+                    <h3 data-i18n="offer.c2t">План проверки</h3>
                     <ul>
-                        <li>Кого спросить и 5 вопросов по The Mom Test</li>
-                        <li>Готовый шаблон, чтобы позвать на разговор</li>
-                        <li>Пороги «идти / стоп» и чеклист-трекер</li>
+                        <li data-i18n="offer.c2a">Кого спросить и 5 вопросов по The Mom Test</li>
+                        <li data-i18n="offer.c2b">Готовый шаблон, чтобы позвать на разговор</li>
+                        <li data-i18n="offer.c2c">Пороги «идти / стоп» и чеклист-трекер</li>
                     </ul>
                 </div>
             </div>
-            <button type="button" class="button" id="offerCtaBtn">Получить план за $7</button>
+            <button type="button" class="button" id="offerCtaBtn" data-i18n="offer.cta">Получить план за $7</button>
 
             <div class="offer-email hidden" id="offerEmailBlock">
-                <p class="offer-email-note">Это пока в разработке, денег не беру. Оставь email: напишу первым, когда будет готово, и дам попробовать бесплатно.</p>
+                <p class="offer-email-note" data-i18n="offer.note">Это пока в разработке, денег не беру. Оставь email: напишу первым, когда будет готово, и дам попробовать бесплатно.</p>
                 <form id="offerEmailForm" class="waitlist-form">
                     <input type="email" id="offerEmail" name="email" placeholder="you@example.com" required>
-                    <button type="submit" class="button" id="offerEmailBtn">Уведомить меня</button>
+                    <button type="submit" class="button" id="offerEmailBtn" data-i18n="offer.notify">Уведомить меня</button>
                 </form>
                 <div class="error" id="offerEmailError"></div>
-                <div class="success-message" id="offerEmailSuccess">✓ Записал. Напишу, как только будет готово.</div>
+                <div class="success-message" id="offerEmailSuccess"></div>
             </div>
         </div>
 
         <!-- ФОРМА ОТЗЫВА -->
         <div class="card hidden" id="reviewFormCard">
-            <h2>Твой отзыв об анализе</h2>
+            <h2 data-i18n="review.title">Твой отзыв об анализе</h2>
             <form id="reviewForm">
                 <div class="form-group">
-                    <label for="reviewText">Что ты думаешь о результатах? (минимум 10 символов)</label>
-                    <textarea id="reviewText" name="reviewText" placeholder="Поделись своим мнением..."></textarea>
-                    <div class="char-count"><span id="reviewCharCount">0</span> / 1000 символов</div>
+                    <label for="reviewText" data-i18n="review.label">Что ты думаешь о результатах? (минимум 10 символов)</label>
+                    <textarea id="reviewText" name="reviewText" data-i18n-ph="review.placeholder" placeholder="Поделись своим мнением..."></textarea>
+                    <div class="char-count"><span id="reviewCharCount">0</span><span data-i18n="review.charsuffix"> / 1000 символов</span></div>
                 </div>
 
                 <div class="form-group">
-                    <label>Оценка анализа</label>
+                    <label data-i18n="review.rate">Оценка анализа</label>
                     <div class="rating-input" id="ratingInput">
-                        <span class="star" data-rating="1" aria-label="1 звезда">★</span>
-                        <span class="star" data-rating="2" aria-label="2 звезды">★</span>
-                        <span class="star" data-rating="3" aria-label="3 звезды">★</span>
-                        <span class="star" data-rating="4" aria-label="4 звезды">★</span>
-                        <span class="star" data-rating="5" aria-label="5 звезд">★</span>
+                        <span class="star" data-rating="1" aria-label="1">★</span>
+                        <span class="star" data-rating="2" aria-label="2">★</span>
+                        <span class="star" data-rating="3" aria-label="3">★</span>
+                        <span class="star" data-rating="4" aria-label="4">★</span>
+                        <span class="star" data-rating="5" aria-label="5">★</span>
                     </div>
                 </div>
 
                 <div class="error" id="reviewErrorMessage"></div>
-                <div class="success-message" id="reviewSuccessMessage">✓ Отзыв отправлен! Спасибо за фидбек.</div>
-                <button type="submit" class="button" id="submitReviewBtn">Отправить отзыв</button>
+                <div class="success-message" id="reviewSuccessMessage"></div>
+                <button type="submit" class="button" id="submitReviewBtn" data-i18n="review.submit">Отправить отзыв</button>
             </form>
         </div>
 
         <!-- СПИСОК ОТЗЫВОВ -->
         <div class="card hidden" id="reviewsCard">
-            <h2>Отзывы пользователей</h2>
+            <h2 data-i18n="reviews.title">Отзывы пользователей</h2>
             <div class="reviews-list" id="reviewsList"></div>
         </div>
 
     </div>
 
     <script>
-        // Анонимный session_id (UUID в localStorage) — только для метрик, без PII
+        // ── i18n ──────────────────────────────────────────────
+        const I18N_EN = {
+            "hero.h1": "Don't build what <span class=\"accent\">nobody wants</span>.",
+            "hero.sub": "An honest AI breakdown of your idea in 30 seconds — before you sink six months into it. 8 angles, proven frameworks, one straight verdict.",
+            "hero.badge1": "⚡ 30 seconds",
+            "hero.badge2": "🆓 Free",
+            "hero.badge3": "🔓 No signup",
+            "form.title": "Your idea",
+            "form.label": "Describe your idea in detail (min. 50 characters)",
+            "form.placeholder": "Example: an app for tracking plants with AI care recommendations...",
+            "form.charsuffix": " / 5000 characters",
+            "form.exlabel": "Or start with an example:",
+            "form.ex1": "B2B SaaS for auto-summarizing Zoom and Google Meet calls",
+            "form.ex2": "A marketplace for local tutors with online payments",
+            "form.ex3": "A Chrome extension for focus and productivity",
+            "form.ex4": "A plant-tracking app with AI care",
+            "form.submit": "Analyze idea",
+            "how.title": "How it works",
+            "how.s1t": "Describe your idea",
+            "how.s1p": "One paragraph, no pitch deck or business plan. Just the idea.",
+            "how.s2t": "AI breaks it down across 8 angles",
+            "how.s2p": "Through proven frameworks: The Mom Test, Jobs-to-be-Done, TAM/SAM/SOM, unit economics.",
+            "how.s3t": "You get an honest verdict",
+            "how.s3p": "GO, PIVOT or KILL — with reasons and what to check next on your own.",
+            "get.title": "What you get",
+            "get.lead": "A breakdown across 8 angles — you can see the depth before you even type your idea.",
+            "why.title": "Why not just ask ChatGPT",
+            "why.text": "ChatGPT praises any idea and moves on — that's not validation. Idea Validator cuts to the truth through proven frameworks and gives a verdict, not a compliment.",
+            "why.p1": "✓ Honest, no “sounds great!”",
+            "why.p2": "✓ Free, no signup",
+            "why.p3": "✓ Your ideas are never published",
+            "analysis.title": "Your idea, analyzed",
+            "analysis.loading": "Analyzing your idea... the first lines appear in a few seconds, the full breakdown takes up to a minute",
+            "offer.badge": "Next step",
+            "offer.title": "Data and a validation plan for <span class=\"offer-price\">$7</span>",
+            "offer.lead": "The breakdown showed what to look at. Next, don't guess — gather facts and talk to people. For $7 I'll put together a pack tailored to your idea:",
+            "offer.c1t": "Real data from the web",
+            "offer.c1a": "Who already does this and what they charge",
+            "offer.c1b": "What their customers complain about in real reviews",
+            "offer.c1c": "The exact communities where your audience hangs out",
+            "offer.c2t": "A validation plan",
+            "offer.c2a": "Who to ask and 5 questions from The Mom Test",
+            "offer.c2b": "A ready-made template to invite people to a chat",
+            "offer.c2c": "Go / stop thresholds and a checklist tracker",
+            "offer.cta": "Get the plan for $7",
+            "offer.note": "This is still in the works, and I'm not charging yet. Leave your email: I'll tell you first when it's ready and let you try it free.",
+            "offer.notify": "Notify me",
+            "review.title": "Your feedback on the analysis",
+            "review.label": "What do you think of the results? (min. 10 characters)",
+            "review.placeholder": "Share your thoughts...",
+            "review.charsuffix": " / 1000 characters",
+            "review.rate": "Rate the analysis",
+            "review.submit": "Send feedback",
+            "reviews.title": "What people say"
+        };
+
+        const MSG = {
+            ru: {
+                errIdeaMin: "Идея должна быть минимум 50 символов",
+                errAnalyze: "Ошибка анализа",
+                errPrefix: "Ошибка: ",
+                reviewRatingReq: "Выбери оценку",
+                reviewMin: "Отзыв должен быть минимум 10 символов",
+                reviewErr: "Ошибка сохранения отзыва",
+                reviewOk: "✓ Отзыв отправлен! Спасибо за фидбек.",
+                emailErr: "Проверь, что email введён правильно",
+                emailAlready: "✓ Ты уже в списке, спасибо!",
+                emailOk: "✓ Записал. Напишу, как только будет готово."
+            },
+            en: {
+                errIdeaMin: "Your idea must be at least 50 characters",
+                errAnalyze: "Analysis error",
+                errPrefix: "Error: ",
+                reviewRatingReq: "Pick a rating",
+                reviewMin: "Feedback must be at least 10 characters",
+                reviewErr: "Couldn't save your feedback",
+                reviewOk: "✓ Feedback sent! Thanks.",
+                emailErr: "Check that the email is valid",
+                emailAlready: "✓ You're already on the list, thanks!",
+                emailOk: "✓ Got it. I'll email you the moment it's ready."
+            }
+        };
+
+        let LANG = localStorage.getItem('iv_lang')
+            || ((navigator.language || 'en').toLowerCase().startsWith('ru') ? 'ru' : 'en');
+        const RU_CACHE = {};
+
+        function cacheRu() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                RU_CACHE['t:' + el.getAttribute('data-i18n')] = el.textContent;
+            });
+            document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                RU_CACHE['h:' + el.getAttribute('data-i18n-html')] = el.innerHTML;
+            });
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                RU_CACHE['p:' + el.getAttribute('data-i18n-ph')] = el.getAttribute('placeholder');
+            });
+        }
+
+        function applyLang(lang) {
+            LANG = lang;
+            localStorage.setItem('iv_lang', lang);
+            document.documentElement.lang = lang;
+            document.title = lang === 'en'
+                ? 'Idea Validator — Validate your startup idea with AI'
+                : 'Idea Validator — Валидируй идею через AI';
+            const en = lang === 'en';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                el.textContent = en ? (I18N_EN[k] ?? RU_CACHE['t:' + k]) : RU_CACHE['t:' + k];
+            });
+            document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                const k = el.getAttribute('data-i18n-html');
+                el.innerHTML = en ? (I18N_EN[k] ?? RU_CACHE['h:' + k]) : RU_CACHE['h:' + k];
+            });
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const k = el.getAttribute('data-i18n-ph');
+                el.setAttribute('placeholder', en ? (I18N_EN[k] ?? RU_CACHE['p:' + k]) : RU_CACHE['p:' + k]);
+            });
+            document.querySelectorAll('.lang-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.lang === lang);
+            });
+        }
+
+        function t(key) {
+            return (MSG[LANG] && MSG[LANG][key]) || MSG.ru[key] || key;
+        }
+
+        // ── Анонимный session_id (UUID в localStorage) — только для метрик, без PII ──
         function getSessionId() {
             let sid = localStorage.getItem('iv_session_id');
             if (!sid) {
@@ -238,7 +381,6 @@
                 });
             });
 
-            // Hover效果
             star.addEventListener('mouseenter', () => {
                 const hoverRating = parseInt(star.dataset.rating);
                 document.querySelectorAll('.star').forEach(s => {
@@ -263,7 +405,7 @@
             const idea = ideaInput.value.trim();
 
             if (idea.length < 50) {
-                showError('Идея должна быть минимум 50 символов', errorMessage);
+                showError(t('errIdeaMin'), errorMessage);
                 return;
             }
 
@@ -282,7 +424,7 @@
                 });
 
                 if (!response.ok) {
-                    let detail = 'Ошибка анализа';
+                    let detail = t('errAnalyze');
                     try { const data = await response.json(); detail = data.detail || detail; } catch (e) {}
                     throw new Error(detail);
                 }
@@ -310,23 +452,13 @@
                 await loadReviews();
             } catch (err) {
                 loadingSpinner.classList.add('hidden');
-                showError(`Ошибка: ${err.message}`, errorMessage);
+                showError(t('errPrefix') + err.message, errorMessage);
             }
         });
 
         function displayAnalysis(text) {
             const sections = text.split('###').slice(1);
             let html = '';
-            const sectionTitles = [
-                "Market Size & Trends",
-                "Target Customer",
-                "Pain Points",
-                "Solution",
-                "Competition",
-                "MVP Scope",
-                "Pricing & Business Model",
-                "Key Risks & Assumptions"
-            ];
 
             sections.forEach((section, index) => {
                 const lines = section.trim().split('\n');
@@ -358,13 +490,13 @@
             e.preventDefault();
 
             if (currentRating === 0) {
-                showError('Выбери оценку', reviewErrorMessage);
+                showError(t('reviewRatingReq'), reviewErrorMessage);
                 return;
             }
 
             const text = reviewText.value.trim();
             if (text.length < 10) {
-                showError('Отзыв должен быть минимум 10 символов', reviewErrorMessage);
+                showError(t('reviewMin'), reviewErrorMessage);
                 return;
             }
 
@@ -383,10 +515,10 @@
 
                 if (!response.ok) {
                     const data = await response.json();
-                    throw new Error(data.detail || 'Ошибка сохранения отзыва');
+                    throw new Error(data.detail || t('reviewErr'));
                 }
 
-                showSuccess('✓ Отзыв отправлен! Спасибо за фидбек.', reviewSuccessMessage);
+                showSuccess(t('reviewOk'), reviewSuccessMessage);
                 reviewText.value = '';
                 reviewCharCount.textContent = '0';
                 currentRating = 0;
@@ -395,7 +527,7 @@
 
                 setTimeout(() => hideSuccess(reviewSuccessMessage), 4000);
             } catch (err) {
-                showError(`Ошибка: ${err.message}`, reviewErrorMessage);
+                showError(t('errPrefix') + err.message, reviewErrorMessage);
             }
         });
 
@@ -403,7 +535,7 @@
             try {
                 // Все отзывы (соц-док), показываем и на свежей странице, не только после анализа
                 const response = await fetch('/api/reviews');
-                if (!response.ok) throw new Error('Ошибка загрузки отзывов');
+                if (!response.ok) throw new Error('reviews');
 
                 const reviews = await response.json();
                 displayReviews(reviews);
@@ -422,7 +554,7 @@
 
             reviewsCard.classList.remove('hidden');
             reviewsList.innerHTML = reviews.map(review => {
-                const date = new Date(review.created_at).toLocaleDateString('ru-RU', {
+                const date = new Date(review.created_at).toLocaleDateString(LANG === 'en' ? 'en-US' : 'ru-RU', {
                     day: 'numeric',
                     month: 'short',
                     year: 'numeric'
@@ -496,14 +628,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, session_id: SESSION_ID })
                 });
-                if (!response.ok) throw new Error('Проверь, что email введён правильно');
+                if (!response.ok) throw new Error(t('emailErr'));
                 const data = await response.json();
-                showSuccess(data.already_joined ? '✓ Ты уже в списке, спасибо!' : '✓ Записал. Напишу, как только будет готово.', offerEmailSuccess);
+                showSuccess(data.already_joined ? t('emailAlready') : t('emailOk'), offerEmailSuccess);
                 offerEmail.value = '';
                 setTimeout(() => hideSuccess(offerEmailSuccess), 4000);
             } catch (err) {
-                showError(`Ошибка: ${err.message}`, offerEmailError);
+                showError(t('errPrefix') + err.message, offerEmailError);
             }
+        });
+
+        // Инициализация языка (после кэша RU из разметки) + переключатель
+        cacheRu();
+        applyLang(LANG);
+        document.querySelectorAll('.lang-btn').forEach(b => {
+            b.addEventListener('click', () => applyLang(b.dataset.lang));
         });
 
         // Показать отзывы (соц-док) сразу при загрузке страницы

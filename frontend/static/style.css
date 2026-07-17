@@ -15,6 +15,7 @@
     --text-secondary: #A1A5B0;
     --border: #2D3447;
     --error: #FF6B6B;
+    --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -667,3 +668,73 @@ strong {
 
 /* Живой стрим разбора (до финального форматирования по секциям) */
 .stream-raw { white-space: pre-wrap; word-break: break-word; font-family: inherit; margin: 0; color: var(--text-secondary, #A1A5B0); line-height: 1.6; }
+
+/* ── Элевация дизайна ─────────────────────────────────────────── */
+
+/* Характерный дисплей-шрифт для заголовков и бренда (тело остаётся Inter) */
+h1, h2, h3, .brand {
+    font-family: var(--font-display);
+}
+
+/* Фирменный элемент: штамп вердикта — реальный выход продукта (KILL/PIVOT/PROCEED) */
+.verdict-stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 9px 20px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(26, 31, 53, 0.55);
+    font-family: 'Fira Code', 'SFMono-Regular', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+}
+.verdict-stamp .v-kill { color: var(--error); }
+.verdict-stamp .v-pivot { color: var(--warm-amber); }
+.verdict-stamp .v-proceed { color: var(--bright-emerald); }
+.verdict-stamp .v-sep { color: var(--text-secondary); opacity: 0.45; }
+
+/* Одна атмосферная деталь: мягкое emerald-свечение за hero */
+.hero { position: relative; }
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 640px;
+    max-width: 92%;
+    height: 360px;
+    background: radial-gradient(ellipse at center, rgba(0, 208, 132, 0.13), transparent 68%);
+    pointer-events: none;
+    z-index: 0;
+}
+.hero > * { position: relative; z-index: 1; }
+
+/* Доступность: не отключаем спиннер, но глушим переходы при reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 600px) {
+    .verdict-stamp { font-size: 0.8rem; gap: 8px; padding: 8px 14px; letter-spacing: 0.12em; }
+}
+
+/* Переключатель языка */
+.lang-bar { display: flex; justify-content: flex-end; gap: 6px; padding-top: 16px; }
+.lang-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.lang-btn:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+.lang-btn.active { background: var(--surface-alt); color: var(--bright-emerald); border-color: var(--bright-emerald); }
