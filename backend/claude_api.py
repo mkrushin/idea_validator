@@ -44,7 +44,9 @@ def analyze_idea(idea_text: str) -> str:
 
     message = client.messages.create(
         model="claude-sonnet-5",
-        max_tokens=2048,
+        max_tokens=6000,
+        thinking={"type": "disabled"},
+        output_config={"effort": "medium"},
         messages=[
             {"role": "user", "content": full_prompt}
         ]
