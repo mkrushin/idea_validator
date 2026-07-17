@@ -7,8 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse, WaitlistRequest
-from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email
+from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse, WaitlistRequest, TrackRequest
+from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email, save_event, count_events_today
 from claude_api import analyze_idea
 
 app = FastAPI(title="Idea Validator")
@@ -73,6 +73,12 @@ async def analyze(request: IdeaRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка анализа: {str(e)}")
+
+@app.post("/api/track")
+async def track_event(request: TrackRequest):
+    """Записать анонимное событие аналитики (visit / cta_click)."""
+    save_event(request.session_id, request.event_type, request.meta)
+    return {"ok": True}
 
 @app.get("/api/reviews")
 async def get_all_reviews(idea_id: int = None, limit: int = 10):

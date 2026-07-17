@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import json
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
@@ -45,6 +46,16 @@ def init_db():
         CREATE TABLE IF NOT EXISTS waitlist (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id TEXT NOT NULL,
+            event_type TEXT NOT NULL,
+            meta TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -139,3 +150,41 @@ def get_reviews(idea_id: Optional[int] = None, limit: int = 10) -> List[Dict[str
     conn.close()
 
     return [dict(row) for row in rows]
+
+
+def save_event(session_id: str, event_type: str, meta: Optional[Dict[str, Any]] = None) -> int:
+    """Записать анонимное событие аналитики."""
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    meta_json = json.dumps(meta, ensure_ascii=False) if meta else None
+    cursor.execute(
+        "INSERT INTO events (session_id, event_type, meta) VALUES (?, ?, ?)",
+        (session_id, event_type, meta_json),
+    )
+    conn.commit()
+    event_id = cursor.lastrowid
+    conn.close()
+    return event_id
+
+
+def count_events_today(event_type: str, session_id: Optional[str] = None) -> int:
+    """Сколько событий данного типа записано сегодня (UTC). Опц. по session_id."""
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    if session_id:
+        cursor.execute(
+            "SELECT COUNT(*) FROM events "
+            "WHERE event_type = ? AND session_id = ? AND created_at >= date('now')",
+            (event_type, session_id),
+        )
+    else:
+        cursor.execute(
+            "SELECT COUNT(*) FROM events "
+            "WHERE event_type = ? AND created_at >= date('now')",
+            (event_type,),
+        )
+    n = cursor.fetchone()[0]
+    conn.close()
+    return n

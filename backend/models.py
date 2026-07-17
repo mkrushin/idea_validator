@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 from datetime import datetime
 
 
@@ -29,3 +29,9 @@ class ReviewResponse(BaseModel):
 
 class WaitlistRequest(BaseModel):
     email: str = Field(..., pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$", max_length=254)
+
+
+class TrackRequest(BaseModel):
+    session_id: str = Field(..., min_length=1, max_length=64)
+    event_type: Literal["visit", "cta_click"]
+    meta: Optional[dict] = None
