@@ -139,3 +139,27 @@ Idea Validator (FastAPI + SQLite + ванильный фронт, задепло
 ## 7. Что дальше
 
 После одобрения этой спеки → writing-plans (детальный план реализации с шагами и проверками) → реализация → запуск → сбор метрик → решение по дереву из раздела 2.
+
+---
+
+## 8. Статус реализации (2026-07-17)
+
+Реализовано и задеплоено в НОВОЙ сессии (subagent-driven-development по плану `docs/superpowers/plans/2026-07-16-validate-demand-experiment.md`). Ниже — что зафиксировано в той сессии, чтобы инфа не потерялась.
+
+**Готово, в проде** (https://ideavalidator-production-b4af.up.railway.app):
+- Таблица `events` + `POST /api/track` (visit/cta_click, анонимный `session_id` из localStorage, без PII).
+- `waitlist.session_id` (идемпотентная миграция) + серверное событие `email_submit`.
+- Safeguards в `/api/analyze`: глобально 150/сутки (по таблице `ideas`, ловит и бессессионный abuse), 5/сессия/сутки (по `analysis_run`); 429 до вызова Claude. Бэкстоп — usage-cap $10 на ключе Anthropic + баланс $5.
+- `analysis_run`/`email_submit` пишет БЭКЕНД; фронт шлёт только visit/cta_click.
+- `GET /stats?token=` (env `STATS_TOKEN`; 503 без токена, 403 при неверном; агрегаты visits/activation/return_7d/cta_ctr/emails, без сырых email).
+- Fake-door оффер «$7» под вердиктом (копия через humanize), старый общий блок «Хочешь больше?» удалён.
+- Живой AI: Sonnet 5, `max_tokens=6000`, `thinking={"type":"disabled"}`, `output_config={"effort":"medium"}` — **подтверждено на проде, API принял** (разбор ~8.7K символов, ~4¢ за вызов). SDK `anthropic` запинен на 0.117.0.
+- Тесты pytest 20/20 (demo-режим). Финальное code-review (opus) — ready to merge.
+
+**Ветка:** всё на `experiment-a-validate-demand` (НЕ в main). Решение: держим отдельно.
+
+**Грабли деплоя (важно):** код живёт только в локальной ветке, доставляется `railway up`. GitHub-репо (main) кода эксперимента НЕ содержит. **Ручной «Deploy/Redeploy» в Railway UI пересобирает из main → сносит код** (симптом: /stats=404). Переменные окружения в UI применяются только после Deploy (до этого /stats=503, /api/analyze=demo). Редеплой — только `railway up`, не UI.
+
+**Доступ к прод-БД (SQLite на Volume `/app/data/ideas.db`):** через `ssh -o StrictHostKeyChecking=accept-new railway-idea_validator "python3 -c \"...\""` (ключ `claude-cleanup` зарегистрирован в Railway, ssh-config-блок `Host railway-idea_validator` → ssh.railway.com). Railway Console-таб в UI поднимается медленно.
+
+**Дальше (на пользователе):** Reddit-пост (r/SideProject) + 5–10 живых разговоров по Mom Test; сбор ~1-2 нед / ~100 визитов; решение по дереву раздела 2.
