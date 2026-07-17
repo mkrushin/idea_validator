@@ -664,3 +664,6 @@ strong {
 .offer-email { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border, #2D3447); }
 .offer-email-note { color: var(--text-secondary, #A1A5B0); margin-bottom: 12px; }
 @media (max-width: 600px) { .offer-cols { grid-template-columns: 1fr; } }
+
+/* Живой стрим разбора (до финального форматирования по секциям) */
+.stream-raw { white-space: pre-wrap; word-break: break-word; font-family: inherit; margin: 0; color: var(--text-secondary, #A1A5B0); line-height: 1.6; }

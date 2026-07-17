@@ -1,15 +1,15 @@
 import os
 import sys
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse, WaitlistRequest, TrackRequest
+from models import IdeaRequest, ReviewRequest, ReviewResponse, WaitlistRequest, TrackRequest
 from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email, save_event, count_events_today, count_ideas_today, get_stats
-from claude_api import analyze_idea
+from claude_api import analyze_idea_stream
 
 app = FastAPI(title="Idea Validator")
 
@@ -58,23 +58,26 @@ async def analyze(request: IdeaRequest):
     if request.session_id and count_events_today("analysis_run", request.session_id) >= DAILY_SESSION_LIMIT:
         raise HTTPException(status_code=429, detail="Вы использовали лимит анализов на сегодня. Зайдите завтра.")
 
-    try:
-        idea_id = save_idea(idea_text)
-        analysis_text = analyze_idea(idea_text)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ошибка анализа: {str(e)}")
+    idea_id = save_idea(idea_text)
 
-    # Успех — записываем серверное событие (метрика активации + счётчик расхода)
-    if request.session_id:
-        save_event(request.session_id, "analysis_run", {"idea_id": idea_id})
+    def generate():
+        # Стримим текст по мере генерации — иначе ~60-секундный ответ отваливается
+        # по idle-таймауту браузера/прокси. idea_id уходит в заголовке X-Idea-Id.
+        for chunk in analyze_idea_stream(idea_text):
+            yield chunk
+        # Стрим дошёл до конца — серверное событие активации/счётчик расхода
+        if request.session_id:
+            save_event(request.session_id, "analysis_run", {"idea_id": idea_id})
 
-    sections = [
-        "Market Size & Trends", "Target Customer", "Pain Points", "Solution",
-        "Competition", "MVP Scope", "Pricing & Business Model", "Key Risks & Assumptions",
-    ]
-    return AnalysisResponse(idea_id=idea_id, analysis=analysis_text, sections=sections)
+    return StreamingResponse(
+        generate(),
+        media_type="text/plain; charset=utf-8",
+        headers={
+            "X-Idea-Id": str(idea_id),
+            "X-Accel-Buffering": "no",   # не буферизировать на прокси
+            "Cache-Control": "no-cache",
+        },
+    )
 
 @app.post("/api/track")
 async def track_event(request: TrackRequest):

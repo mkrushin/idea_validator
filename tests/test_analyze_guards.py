@@ -4,6 +4,7 @@ IDEA = "Мобильное приложение для трекинга прив
 def test_analyze_writes_analysis_run_event(client):
     r = client.post("/api/analyze", json={"idea": IDEA, "session_id": "s1"})
     assert r.status_code == 200
+    assert len(r.text) > 0  # тело стрима прочитано → генератор завершён → событие записано
     import db
     assert db.count_events_today("analysis_run", session_id="s1") == 1
 

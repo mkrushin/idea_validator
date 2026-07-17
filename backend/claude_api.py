@@ -31,18 +31,20 @@ def load_prompt_template():
     with open(prompt_path, "r", encoding="utf-8") as f:
         return f.read()
 
-def analyze_idea(idea_text: str) -> str:
+def analyze_idea_stream(idea_text: str):
     """
-    Отправляет идею в Claude для анализа.
-    Возвращает структурированный анализ.
+    Стрим-генератор текста разбора. Демо — одним куском, живой — по мере генерации.
+    Стрим нужен, чтобы 30-60-секундный синхронный ответ не отваливался по
+    idle-таймауту браузера/прокси («Load failed»): байты идут непрерывно.
     """
     if not client:
-        return get_demo_analysis(idea_text)
+        yield get_demo_analysis(idea_text)
+        return
 
     prompt_template = load_prompt_template()
     full_prompt = prompt_template.format(idea=idea_text)
 
-    message = client.messages.create(
+    with client.messages.stream(
         model="claude-sonnet-5",
         max_tokens=6000,
         thinking={"type": "disabled"},
@@ -50,9 +52,9 @@ def analyze_idea(idea_text: str) -> str:
         messages=[
             {"role": "user", "content": full_prompt}
         ]
-    )
-
-    return message.content[0].text
+    ) as stream:
+        for text in stream.text_stream:
+            yield text
 
 def get_demo_analysis(idea_text: str) -> str:
     """Demo режим - возвращает пример анализа для тестирования интерфейса"""

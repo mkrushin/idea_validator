@@ -99,7 +99,7 @@
             <h2>Анализ твоей идеи</h2>
             <div class="loading hidden" id="loadingSpinner">
                 <div class="spinner"></div>
-                <p>Анализирую идею... Это займет 2-5 секунд</p>
+                <p>Анализирую идею... первые строки появятся через несколько секунд, полный разбор — до минуты</p>
             </div>
             <div class="analysis-container" id="analysisResult"></div>
         </div>
@@ -280,15 +280,29 @@
                 });
 
                 if (!response.ok) {
-                    const data = await response.json();
-                    throw new Error(data.detail || 'Ошибка анализа');
+                    let detail = 'Ошибка анализа';
+                    try { const data = await response.json(); detail = data.detail || detail; } catch (e) {}
+                    throw new Error(detail);
                 }
 
-                const data = await response.json();
-                currentIdeaId = data.idea_id;
+                currentIdeaId = parseInt(response.headers.get('X-Idea-Id')) || null;
 
+                // Разбор приходит стримом (генерация ~30-60с). Читаем по частям:
+                // соединение не простаивает (не отвалится по таймауту), текст идёт вживую.
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let full = '';
                 loadingSpinner.classList.add('hidden');
-                displayAnalysis(data.analysis);
+                analysisResult.innerHTML = '<pre class="stream-raw"></pre>';
+                const rawEl = analysisResult.querySelector('.stream-raw');
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    full += decoder.decode(value, { stream: true });
+                    rawEl.textContent = full;
+                }
+
+                displayAnalysis(full);
                 document.getElementById('offerCard').classList.remove('hidden');
                 reviewFormCard.classList.remove('hidden');
                 await loadReviews();
