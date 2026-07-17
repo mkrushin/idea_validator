@@ -30,3 +30,20 @@ def test_analyze_global_limit(client, monkeypatch):
 def test_analyze_works_without_session_id(client):
     r = client.post("/api/analyze", json={"idea": IDEA})
     assert r.status_code == 200
+
+
+def test_analyze_global_limit_counts_sessionless(client, monkeypatch):
+    import main
+    monkeypatch.setattr(main, "DAILY_GLOBAL_LIMIT", 1)
+    assert client.post("/api/analyze", json={"idea": IDEA}).status_code == 200
+    r = client.post("/api/analyze", json={"idea": IDEA})
+    assert r.status_code == 429
+
+
+def test_analyze_429_does_not_create_idea(client, monkeypatch):
+    import main, db
+    monkeypatch.setattr(main, "DAILY_GLOBAL_LIMIT", 1)
+    client.post("/api/analyze", json={"idea": IDEA, "session_id": "s1"})
+    assert db.count_ideas_today() == 1
+    client.post("/api/analyze", json={"idea": IDEA, "session_id": "s2"})  # 429, без вызова анализа
+    assert db.count_ideas_today() == 1  # строка НЕ добавилась

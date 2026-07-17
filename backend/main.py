@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(__file__))
 
 from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse, WaitlistRequest, TrackRequest
-from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email, save_event, count_events_today
+from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email, save_event, count_events_today, count_ideas_today
 from claude_api import analyze_idea
 
 app = FastAPI(title="Idea Validator")
@@ -52,7 +52,7 @@ async def analyze(request: IdeaRequest):
         raise HTTPException(status_code=400, detail="Идея должна быть минимум 50 символов")
 
     # Safeguards: проверяем ДО вызова API, чтобы не тратить деньги
-    if count_events_today("analysis_run") >= DAILY_GLOBAL_LIMIT:
+    if count_ideas_today() >= DAILY_GLOBAL_LIMIT:
         raise HTTPException(status_code=429, detail="Лимит анализов на сегодня исчерпан. Зайдите завтра.")
     if request.session_id and count_events_today("analysis_run", request.session_id) >= DAILY_SESSION_LIMIT:
         raise HTTPException(status_code=429, detail="Вы использовали лимит анализов на сегодня. Зайдите завтра.")

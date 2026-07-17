@@ -176,6 +176,17 @@ def save_event(session_id: str, event_type: str, meta: Optional[Dict[str, Any]] 
     return event_id
 
 
+def count_ideas_today() -> int:
+    """Сколько анализов (строк в ideas) создано сегодня (UTC) — для глобального лимита."""
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM ideas WHERE created_at >= date('now')")
+    n = cursor.fetchone()[0]
+    conn.close()
+    return n
+
+
 def count_events_today(event_type: str, session_id: Optional[str] = None) -> int:
     """Сколько событий данного типа записано сегодня (UTC). Опц. по session_id."""
     db_path = get_db_path()
