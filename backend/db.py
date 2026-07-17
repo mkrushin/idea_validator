@@ -207,3 +207,52 @@ def count_events_today(event_type: str, session_id: Optional[str] = None) -> int
     n = cursor.fetchone()[0]
     conn.close()
     return n
+
+
+def get_stats() -> Dict[str, Any]:
+    """Агрегаты эксперимента для решения по дереву гипотез (без сырых email)."""
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    def uniq(event_type: str) -> int:
+        cursor.execute(
+            "SELECT COUNT(DISTINCT session_id) FROM events WHERE event_type = ?",
+            (event_type,),
+        )
+        return cursor.fetchone()[0]
+
+    visits = uniq("visit")
+    analyses = uniq("analysis_run")
+    cta = uniq("cta_click")
+
+    cursor.execute("SELECT COUNT(*) FROM waitlist")
+    emails = cursor.fetchone()[0]
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM ("
+        "  SELECT session_id FROM events "
+        "  WHERE event_type = 'visit' AND created_at >= date('now', '-7 days') "
+        "  GROUP BY session_id HAVING COUNT(DISTINCT date(created_at)) >= 2"
+        ")"
+    )
+    returns_7d = cursor.fetchone()[0]
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM events WHERE event_type = 'analysis_run' AND created_at >= date('now')"
+    )
+    analyses_today = cursor.fetchone()[0]
+    conn.close()
+
+    def pct(num: int, den: int) -> float:
+        return round(100.0 * num / den, 1) if den else 0.0
+
+    return {
+        "visits": visits,
+        "analyses": analyses,
+        "activation_pct": pct(analyses, visits),
+        "return_7d_pct": pct(returns_7d, visits),
+        "cta_ctr_pct": pct(cta, analyses),
+        "emails": emails,
+        "analyses_today": analyses_today,
+    }

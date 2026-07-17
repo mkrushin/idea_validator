@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(__file__))
 
 from models import IdeaRequest, AnalysisResponse, ReviewRequest, ReviewResponse, WaitlistRequest, TrackRequest
-from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email, save_event, count_events_today, count_ideas_today
+from db import init_db, save_idea, save_review, get_reviews, get_idea, save_waitlist_email, save_event, count_events_today, count_ideas_today, get_stats
 from claude_api import analyze_idea
 
 app = FastAPI(title="Idea Validator")
@@ -130,6 +130,17 @@ async def join_waitlist(request: WaitlistRequest):
     if request.session_id:
         save_event(request.session_id, "email_submit", {"email_new": is_new})
     return {"ok": True, "already_joined": not is_new}
+
+
+@app.get("/stats")
+async def stats(token: str = ""):
+    """Агрегаты эксперимента. Доступ по секретному токену из env STATS_TOKEN."""
+    expected = os.getenv("STATS_TOKEN", "").strip()
+    if not expected:
+        raise HTTPException(status_code=503, detail="Stats не сконфигурированы (нет STATS_TOKEN)")
+    if token != expected:
+        raise HTTPException(status_code=403, detail="Неверный токен")
+    return get_stats()
 
 
 @app.get("/static/{file_path:path}")
