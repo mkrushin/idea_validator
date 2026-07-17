@@ -5,6 +5,7 @@ from datetime import datetime
 
 class IdeaRequest(BaseModel):
     idea: str = Field(..., min_length=50, max_length=5000)
+    session_id: Optional[str] = Field(None, max_length=64)
 
 
 class AnalysisResponse(BaseModel):

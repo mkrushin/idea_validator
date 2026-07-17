@@ -28,6 +28,9 @@ app.add_middleware(
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DAILY_GLOBAL_LIMIT = 150   # анализов/сутки на всех
+DAILY_SESSION_LIMIT = 5    # анализов/сутки на session_id
+
 @app.get("/")
 async def root():
     """Главная страница"""
@@ -43,36 +46,34 @@ async def root():
 
 @app.post("/api/analyze")
 async def analyze(request: IdeaRequest):
-    """Анализировать идею через Claude"""
+    """Анализировать идею через Claude (с дневными лимитами расхода)."""
+    idea_text = request.idea.strip()
+    if len(idea_text) < 50:
+        raise HTTPException(status_code=400, detail="Идея должна быть минимум 50 символов")
+
+    # Safeguards: проверяем ДО вызова API, чтобы не тратить деньги
+    if count_events_today("analysis_run") >= DAILY_GLOBAL_LIMIT:
+        raise HTTPException(status_code=429, detail="Лимит анализов на сегодня исчерпан. Зайдите завтра.")
+    if request.session_id and count_events_today("analysis_run", request.session_id) >= DAILY_SESSION_LIMIT:
+        raise HTTPException(status_code=429, detail="Вы использовали лимит анализов на сегодня. Зайдите завтра.")
+
     try:
-        idea_text = request.idea.strip()
-
-        if len(idea_text) < 50:
-            raise HTTPException(status_code=400, detail="Идея должна быть минимум 50 символов")
-
         idea_id = save_idea(idea_text)
-
         analysis_text = analyze_idea(idea_text)
-
-        sections = [
-            "Market Size & Trends",
-            "Target Customer",
-            "Pain Points",
-            "Solution",
-            "Competition",
-            "MVP Scope",
-            "Pricing & Business Model",
-            "Key Risks & Assumptions"
-        ]
-
-        return AnalysisResponse(
-            idea_id=idea_id,
-            analysis=analysis_text,
-            sections=sections
-        )
-
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка анализа: {str(e)}")
+
+    # Успех — записываем серверное событие (метрика активации + счётчик расхода)
+    if request.session_id:
+        save_event(request.session_id, "analysis_run", {"idea_id": idea_id})
+
+    sections = [
+        "Market Size & Trends", "Target Customer", "Pain Points", "Solution",
+        "Competition", "MVP Scope", "Pricing & Business Model", "Key Risks & Assumptions",
+    ]
+    return AnalysisResponse(idea_id=idea_id, analysis=analysis_text, sections=sections)
 
 @app.post("/api/track")
 async def track_event(request: TrackRequest):
