@@ -122,12 +122,6 @@ h1 .accent {
     color: var(--text-primary);
 }
 
-.waitlist-text {
-    color: var(--text-secondary);
-    margin-bottom: 20px;
-    line-height: 1.6;
-}
-
 .waitlist-form {
     display: flex;
     gap: 12px;

@@ -30,7 +30,7 @@ class ReviewResponse(BaseModel):
 
 class WaitlistRequest(BaseModel):
     email: str = Field(..., pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$", max_length=254)
-    session_id: Optional[str] = Field(None, max_length=64)
+    session_id: Optional[str] = Field(None, min_length=1, max_length=64)
 
 
 class TrackRequest(BaseModel):

@@ -52,6 +52,7 @@ async def analyze(request: IdeaRequest):
         raise HTTPException(status_code=400, detail="Идея должна быть минимум 50 символов")
 
     # Safeguards: проверяем ДО вызова API, чтобы не тратить деньги
+    # Глобальный кап считаем по ideas (все анализы, вкл. бессессионные); /stats.analyses_today считает analysis_run (только сессионные) — числа могут расходиться.
     if count_ideas_today() >= DAILY_GLOBAL_LIMIT:
         raise HTTPException(status_code=429, detail="Лимит анализов на сегодня исчерпан. Зайдите завтра.")
     if request.session_id and count_events_today("analysis_run", request.session_id) >= DAILY_SESSION_LIMIT:
