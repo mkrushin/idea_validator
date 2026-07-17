@@ -124,8 +124,10 @@ async def create_review(request: ReviewRequest):
 
 @app.post("/api/waitlist")
 async def join_waitlist(request: WaitlistRequest):
-    """Добавить email в список ожидания живого AI-анализа"""
-    is_new = save_waitlist_email(request.email.strip().lower())
+    """Fake-door: сохранить email + записать событие email_submit."""
+    is_new = save_waitlist_email(request.email.strip().lower(), request.session_id)
+    if request.session_id:
+        save_event(request.session_id, "email_submit", {"email_new": is_new})
     return {"ok": True, "already_joined": not is_new}
 
 

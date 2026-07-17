@@ -50,6 +50,12 @@ def init_db():
         )
     """)
 
+    # Миграция: добавить session_id, если таблица waitlist создана раньше без него
+    cursor.execute("PRAGMA table_info(waitlist)")
+    waitlist_cols = [row[1] for row in cursor.fetchall()]
+    if "session_id" not in waitlist_cols:
+        cursor.execute("ALTER TABLE waitlist ADD COLUMN session_id TEXT")
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,14 +118,16 @@ def save_review(idea_id: int, review_text: str, rating: int) -> int:
 
     return review_id
 
-def save_waitlist_email(email: str) -> bool:
+def save_waitlist_email(email: str, session_id: Optional[str] = None) -> bool:
     """Сохранить email в waitlist. Возвращает False, если email уже есть."""
     db_path = get_db_path()
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
     try:
-        cursor.execute("INSERT INTO waitlist (email) VALUES (?)", (email,))
+        cursor.execute(
+            "INSERT INTO waitlist (email, session_id) VALUES (?, ?)",
+            (email, session_id),
+        )
         conn.commit()
         return True
     except sqlite3.IntegrityError:
