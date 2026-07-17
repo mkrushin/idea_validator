@@ -271,6 +271,8 @@
             analysisCard.classList.remove('hidden');
             loadingSpinner.classList.remove('hidden');
             analysisResult.innerHTML = '';
+            // Сразу переносим к секции анализа, чтобы был виден спиннер и живой стрим
+            analysisCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             try {
                 const response = await fetch('/api/analyze', {
@@ -340,11 +342,6 @@
             });
 
             analysisResult.innerHTML = html;
-
-            // Scroll to analysis
-            setTimeout(() => {
-                analysisCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
         }
 
         function markdownToHtml(text) {
@@ -404,7 +401,8 @@
 
         async function loadReviews() {
             try {
-                const response = await fetch(`/api/reviews?idea_id=${currentIdeaId}`);
+                // Все отзывы (соц-док), показываем и на свежей странице, не только после анализа
+                const response = await fetch('/api/reviews');
                 if (!response.ok) throw new Error('Ошибка загрузки отзывов');
 
                 const reviews = await response.json();
@@ -415,14 +413,14 @@
         }
 
         function displayReviews(reviews) {
-            reviewsCard.classList.remove('hidden');
             const reviewsList = document.getElementById('reviewsList');
 
-            if (reviews.length === 0) {
-                reviewsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px 20px;">Пока нет отзывов. Будь первым, поделись мнением!</p>';
+            if (!reviews || reviews.length === 0) {
+                reviewsCard.classList.add('hidden');  // не показываем пустую карточку
                 return;
             }
 
+            reviewsCard.classList.remove('hidden');
             reviewsList.innerHTML = reviews.map(review => {
                 const date = new Date(review.created_at).toLocaleDateString('ru-RU', {
                     day: 'numeric',
@@ -507,6 +505,9 @@
                 showError(`Ошибка: ${err.message}`, offerEmailError);
             }
         });
+
+        // Показать отзывы (соц-док) сразу при загрузке страницы
+        loadReviews();
     </script>
 </body>
 </html>
