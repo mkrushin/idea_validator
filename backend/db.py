@@ -242,10 +242,47 @@ def get_stats() -> Dict[str, Any]:
         "SELECT COUNT(*) FROM events WHERE event_type = 'analysis_run' AND created_at >= date('now')"
     )
     analyses_today = cursor.fetchone()[0]
+
+    # Разбивка по каналу: источник берём из первого visit сессии (первое касание).
+    SRC_MAP = (
+        "WITH src_map AS ("
+        "  SELECT session_id, COALESCE(MIN(json_extract(meta, '$.src')), 'direct') AS src"
+        "  FROM events WHERE event_type = 'visit' GROUP BY session_id"
+        ")"
+    )
+    by_source: Dict[str, Dict[str, Any]] = {}
+
+    def bucket(src: str) -> Dict[str, Any]:
+        return by_source.setdefault(
+            src, {"visits": 0, "analyses": 0, "cta_clicks": 0, "emails": 0}
+        )
+
+    cursor.execute(
+        SRC_MAP + " SELECT m.src, e.event_type, COUNT(DISTINCT e.session_id)"
+        " FROM events e JOIN src_map m ON m.session_id = e.session_id"
+        " GROUP BY m.src, e.event_type"
+    )
+    field = {"visit": "visits", "analysis_run": "analyses", "cta_click": "cta_clicks"}
+    for src, event_type, n in cursor.fetchall():
+        if event_type in field:
+            bucket(src)[field[event_type]] = n
+
+    cursor.execute(
+        SRC_MAP + " SELECT COALESCE(m.src, 'direct'), COUNT(*)"
+        " FROM waitlist w LEFT JOIN src_map m ON m.session_id = w.session_id"
+        " GROUP BY 1"
+    )
+    for src, n in cursor.fetchall():
+        bucket(src)["emails"] = n
+
     conn.close()
 
     def pct(num: int, den: int) -> float:
         return round(100.0 * num / den, 1) if den else 0.0
+
+    for row in by_source.values():
+        row["activation_pct"] = pct(row["analyses"], row["visits"])
+        row["cta_ctr_pct"] = pct(row["cta_clicks"], row["analyses"])
 
     return {
         "visits": visits,
@@ -255,4 +292,5 @@ def get_stats() -> Dict[str, Any]:
         "cta_ctr_pct": pct(cta, analyses),
         "emails": emails,
         "analyses_today": analyses_today,
+        "by_source": by_source,
     }

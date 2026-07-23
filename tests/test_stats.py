@@ -57,6 +57,29 @@ def test_stats_reports_analyses_today(client):
     assert d["analyses_today"] == 1
 
 
+def test_stats_splits_by_source(client):
+    idea = "Сервис подбора книг по настроению с рекомендациями на основе прошлых оценок пользователя онлайн"
+    # tg: 2 визита, 1 анализ, 1 клик, 1 email
+    for s in ["tg1", "tg2"]:
+        client.post("/api/track", json={"session_id": s, "event_type": "visit", "meta": {"src": "telegram"}})
+    client.post("/api/analyze", json={"idea": idea, "session_id": "tg1"})
+    client.post("/api/track", json={"session_id": "tg1", "event_type": "cta_click", "meta": {"src": "telegram"}})
+    client.post("/api/waitlist", json={"email": "tg1@x.com", "session_id": "tg1"})
+    # reddit: 1 визит, без анализа
+    client.post("/api/track", json={"session_id": "r1", "event_type": "visit", "meta": {"src": "reddit"}})
+    # без src → direct
+    client.post("/api/track", json={"session_id": "d1", "event_type": "visit"})
+
+    by_src = client.get("/stats?token=test-token").json()["by_source"]
+    assert by_src["telegram"] == {
+        "visits": 2, "analyses": 1, "cta_clicks": 1, "emails": 1,
+        "activation_pct": 50.0, "cta_ctr_pct": 100.0,
+    }
+    assert by_src["reddit"]["visits"] == 1
+    assert by_src["reddit"]["analyses"] == 0
+    assert by_src["direct"]["visits"] == 1
+
+
 def test_stats_503_when_token_unset(client, monkeypatch):
     monkeypatch.delenv("STATS_TOKEN", raising=False)
     r = client.get("/stats?token=whatever")
