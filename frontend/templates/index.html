@@ -51,6 +51,8 @@
                 <div class="form-group">
                     <label for="idea" data-i18n="form.label">Опиши идею подробнее (минимум 50 символов)</label>
                     <textarea id="idea" name="idea" data-i18n-ph="form.placeholder" placeholder="Пример: приложение для трекинга растений с AI-рекомендациями по уходу..."></textarea>
+                    <p class="form-hint" data-i18n="form.hint">Если у тебя уже есть клиенты, продажи или работающий прототип — напиши об этом. Это меняет вердикт.</p>
+                    <p class="form-hint" data-i18n-html="form.privacy">Идея уходит в Anthropic на разбор и хранится у меня без привязки к тебе. Не продаю и не публикую — <a href="#" class="privacy-link">подробнее</a>.</p>
                     <div class="char-count"><span id="charCount">0</span><span data-i18n="form.charsuffix"> / 5000 символов</span></div>
                     <div class="examples">
                         <span class="examples-label" data-i18n="form.exlabel">Или начни с примера:</span>
@@ -128,27 +130,25 @@
         <!-- ОФФЕР (fake-door) -->
         <div class="card hidden" id="offerCard">
             <div class="offer-badge" data-i18n="offer.badge">Следующий шаг</div>
-            <h2 data-i18n-html="offer.title">Данные и план проверки за <span class="offer-price">$7</span></h2>
-            <p class="offer-lead" data-i18n="offer.lead">Разбор показал, на что стоит смотреть. Дальше не гадать, а собрать факты и поговорить с людьми. За $7 соберу тебе пакет под твою идею:</p>
-            <div class="offer-cols">
-                <div class="offer-col">
-                    <h3 data-i18n="offer.c1t">Живые данные из сети</h3>
-                    <ul>
-                        <li data-i18n="offer.c1a">Кто уже это делает и сколько берёт</li>
-                        <li data-i18n="offer.c1b">На что жалуются клиенты в реальных отзывах</li>
-                        <li data-i18n="offer.c1c">Конкретные сообщества, где сидит твоя аудитория</li>
-                    </ul>
-                </div>
-                <div class="offer-col">
-                    <h3 data-i18n="offer.c2t">План проверки</h3>
-                    <ul>
-                        <li data-i18n="offer.c2a">Кого спросить и 5 вопросов по The Mom Test</li>
-                        <li data-i18n="offer.c2b">Готовый шаблон, чтобы позвать на разговор</li>
-                        <li data-i18n="offer.c2c">Пороги «идти / стоп» и чеклист-трекер</li>
-                    </ul>
-                </div>
+            <!-- Заголовок подставляется по вердикту разбора (см. setOfferTitle) -->
+            <h2 id="offerTitle" data-i18n="offer.titlePivot">Разбор говорит разворачивать. Найду, куда именно — 1490 ₽</h2>
+
+            <!-- Дыры из этого конкретного разбора (заполняется в fillOfferGaps) -->
+            <div class="offer-gaps hidden" id="offerGaps">
+                <p class="offer-gaps-label" data-i18n="offer.gapsLabel">Вот что в твоём разборе осталось непроверенным:</p>
+                <p class="offer-gaps-text" id="offerGapsText"></p>
+                <p class="offer-gaps-after" data-i18n="offer.gapsAfter">Пока это догадки, а вердикт стоит на них. Проверю фактами, и станет понятно, чего он на самом деле стоит.</p>
             </div>
-            <button type="button" class="button" id="offerCtaBtn" data-i18n="offer.cta">Получить план за $7</button>
+
+            <p class="offer-lead" data-i18n="offer.lead">Проверяю это не моделью, а руками. Что найду:</p>
+            <div class="offer-list">
+                <p><strong data-i18n="offer.p1t">Кто уже платит и сколько</strong><span data-i18n="offer.p1d"> — цены костылей, которыми люди закрывают эту проблему: сервисы, курсы, фрилансеры, подписки. Со ссылками на отзывы, где названа сумма.</span></p>
+                <p><strong data-i18n="offer.p2t">Где эти люди сидят</strong><span data-i18n="offer.p2d"> — живые обсуждения с жалобами на это, с цитатами и ссылками.</span></p>
+                <p><strong data-i18n="offer.p3t">Что и куда им написать</strong><span data-i18n="offer.p3d"> — готовые первые сообщения под каждый тип людей. Самая муторная часть, из-за которой обычно всё и застревает на неделю.</span></p>
+                <p><strong data-i18n="offer.p4t">Разбор ответов</strong><span data-i18n="offer.p4d"> — напишешь им, пришлёшь мне переписку: разберу, где вежливое «да», а где настоящий сигнал.</span></p>
+            </div>
+            <p class="offer-terms" data-i18n="offer.terms">Всё — в течение 30 дней с оплаты. Как правило, набирается 20–40 таких подтверждений — из цен, обсуждений и ответов. Если по твоей нише их не окажется — это тоже ответ, и деньги верну.</p>
+            <button type="button" class="button" id="offerCtaBtn" data-i18n="offer.cta">Забрать за 1490 ₽</button>
 
             <div class="offer-email hidden" id="offerEmailBlock">
                 <p class="offer-email-note" data-i18n="offer.note">Это пока в разработке, денег не беру. Оставь email: напишу первым, когда будет готово, и дам попробовать бесплатно.</p>
@@ -194,6 +194,18 @@
             <div class="reviews-list" id="reviewsList"></div>
         </div>
 
+        <footer class="site-footer">
+            <details class="privacy">
+                <summary data-i18n="privacy.summary">Что происходит с твоей идеей</summary>
+                <div class="privacy-body">
+                    <p data-i18n="privacy.p1">Текст идеи уходит в Anthropic — на нём модель пишет разбор. Копия идеи и разбора остаётся у меня в базе, чтобы я видел, где сервис врёт, и чинил промпт.</p>
+                    <p data-i18n="privacy.p2">Аккаунтов нет, поэтому идея лежит без привязки к тебе: ни имени, ни почты, ни IP рядом с ней не хранится. Почту прошу только на экране оффера, и она лежит отдельно от идей.</p>
+                    <p data-i18n="privacy.p3">Идеи я не продаю, не публикую и не собираю из них базу «перспективных». Если хочешь, чтобы твою удалили — напиши, удалю.</p>
+                    <p data-i18n="privacy.p4">Это пет-проект одного человека, не компания: юрлица и договора оферты за ним нет. Если идея дорога вам до того, что это принципиально — не вводите её здесь.</p>
+                </div>
+            </details>
+        </footer>
+
     </div>
 
     <script>
@@ -207,6 +219,15 @@
             "form.title": "Your idea",
             "form.label": "Describe your idea in detail (min. 50 characters)",
             "form.placeholder": "Example: an app for tracking plants with AI care recommendations...",
+            "form.hint": "If you already have customers, revenue or a working prototype — say so. It changes the verdict.",
+            "form.privacy": "Your idea goes to Anthropic for the analysis and is stored on my side with nothing linking it to you. I don't sell or publish it — <a href=\"#\" class=\"privacy-link\">details</a>.",
+            "offer.gapsLabel": "Here's what your analysis couldn't verify:",
+            "offer.gapsAfter": "Right now these are guesses, and the verdict rests on them. I'll check them against facts, then you'll know what it's actually worth.",
+            "privacy.summary": "What happens to your idea",
+            "privacy.p1": "The text of your idea goes to Anthropic — that's what the analysis is written on. A copy of the idea and the analysis stays in my database so I can see where the service is wrong and fix the prompt.",
+            "privacy.p2": "There are no accounts, so the idea sits with nothing linking it to you: no name, no email, no IP stored next to it. I only ask for an email on the offer screen, and it's kept separately from the ideas.",
+            "privacy.p3": "I don't sell your ideas, don't publish them and don't build a database of \"promising\" ones out of them. Want yours deleted? Write to me and I'll delete it.",
+            "privacy.p4": "This is one person's pet project, not a company: there's no legal entity or terms-of-service contract behind it. If your idea matters to you that much — don't put it in here.",
             "form.charsuffix": " / 5000 characters",
             "form.exlabel": "Or start with an example:",
             "form.ex1": "B2B SaaS for auto-summarizing Zoom and Google Meet calls",
@@ -231,17 +252,20 @@
             "analysis.title": "Your idea, analyzed",
             "analysis.loading": "Analyzing your idea... the first lines appear in a few seconds, the full breakdown takes up to a minute",
             "offer.badge": "Next step",
-            "offer.title": "Data and a validation plan for <span class=\"offer-price\">$7</span>",
-            "offer.lead": "The breakdown showed what to look at. Next, don't guess — gather facts and talk to people. For $7 I'll put together a pack tailored to your idea:",
-            "offer.c1t": "Real data from the web",
-            "offer.c1a": "Who already does this and what they charge",
-            "offer.c1b": "What their customers complain about in real reviews",
-            "offer.c1c": "The exact communities where your audience hangs out",
-            "offer.c2t": "A validation plan",
-            "offer.c2a": "Who to ask and 5 questions from The Mom Test",
-            "offer.c2b": "A ready-made template to invite people to a chat",
-            "offer.c2c": "Go / stop thresholds and a checklist tracker",
-            "offer.cta": "Get the plan for $7",
+            "offer.titlePivot": "The breakdown says pivot. I'll find where exactly — $19",
+            "offer.titleKill": "The breakdown says stop. Before you drop it — I'll check the facts — $19",
+            "offer.titleProceed": "The breakdown says go. I'll find out who's already paying — and how much — $19",
+            "offer.lead": "I check this by hand, not with a model. What you get:",
+            "offer.p1t": "Who already pays, and how much",
+            "offer.p1d": " — real prices of the workarounds people use for this problem: tools, courses, freelancers, subscriptions. With links to reviews that name the amount.",
+            "offer.p2t": "Where those people are",
+            "offer.p2d": " — live threads complaining about it, with quotes and links.",
+            "offer.p3t": "What to send them",
+            "offer.p3d": " — ready-to-send opening messages for each type of person. The tedious part that usually stalls everything for a week.",
+            "offer.p4t": "Reading the replies",
+            "offer.p4d": " — you write to them, send me the thread: I'll sort the polite \"yeah, sounds useful\" from the real signal.",
+            "offer.terms": "All of it within 30 days of purchase. Usually 20–40 such data points add up — from prices, threads and replies. If your niche doesn't have them, that's an answer too, and I'll refund you.",
+            "offer.cta": "Get it for $19",
             "offer.note": "This is still in the works, and I'm not charging yet. Leave your email: I'll tell you first when it's ready and let you try it free.",
             "offer.notify": "Notify me",
             "review.title": "Your feedback on the analysis",
@@ -264,7 +288,13 @@
                 reviewOk: "✓ Отзыв отправлен! Спасибо за фидбек.",
                 emailErr: "Проверь, что email введён правильно",
                 emailAlready: "✓ Ты уже в списке, спасибо!",
-                emailOk: "✓ Записал. Напишу, как только будет готово."
+                emailOk: "✓ Записал. Напишу, как только будет готово.",
+                offerTitlePivot: "Разбор говорит разворачивать. Найду, куда именно — 1490 ₽",
+                offerTitleKill: "Разбор говорит закрывать. Прежде чем бросать — проверю на фактах — 1490 ₽",
+                offerTitleProceed: "Разбор говорит идти. Найду, кто уже платит за это — и сколько — 1490 ₽",
+                glossPivot: "PIVOT — это не «выбрось и начни заново». Боль настоящая, промах в чём-то одном: в сегменте, упаковке или модели денег. Что менять — ниже.",
+                glossKill: "KILL — за эту боль не платят и вряд ли станут. Речь про саму задачу, а не про то, как ты её сделал.",
+                glossProceed: "PROCEED — рынок подтверждён и вход в одиночку реален. Риски ниже всё равно прочитай."
             },
             en: {
                 errIdeaMin: "Your idea must be at least 50 characters",
@@ -276,7 +306,13 @@
                 reviewOk: "✓ Feedback sent! Thanks.",
                 emailErr: "Check that the email is valid",
                 emailAlready: "✓ You're already on the list, thanks!",
-                emailOk: "✓ Got it. I'll email you the moment it's ready."
+                emailOk: "✓ Got it. I'll email you the moment it's ready.",
+                offerTitlePivot: "The breakdown says pivot. I'll find where exactly — $19",
+                offerTitleKill: "The breakdown says stop. Before you drop it — I'll check the facts — $19",
+                offerTitleProceed: "The breakdown says go. I'll find out who's already paying — and how much — $19",
+                glossPivot: "PIVOT doesn't mean \"scrap it and start over\". The pain is real; one thing is off — the segment, the packaging or the way it makes money. What to change is below.",
+                glossKill: "KILL — nobody pays for this pain and likely never will. That's about the problem itself, not about how you built it.",
+                glossProceed: "PROCEED — the market is proven and entering it solo is realistic. Still read the risks below."
             }
         };
 
@@ -319,6 +355,8 @@
             document.querySelectorAll('.lang-btn').forEach(b => {
                 b.classList.toggle('active', b.dataset.lang === lang);
             });
+            // Заголовок оффера не берётся из data-i18n напрямую — он зависит от вердикта
+            if (currentVerdict) setOfferTitle();
         }
 
         function t(key) {
@@ -337,11 +375,35 @@
         }
         const SESSION_ID = getSessionId();
 
+        // ── Источник трафика: ?src= из ссылки, иначе домен реферера, иначе direct.
+        // Фиксируем первое касание — вернувшийся напрямую посетитель остаётся за своим каналом.
+        function getSource() {
+            const stored = localStorage.getItem('iv_src');
+            if (stored) return stored;
+
+            const params = new URLSearchParams(location.search);
+            let src = params.get('src') || params.get('utm_source') || '';
+            if (!src && document.referrer) {
+                try {
+                    const host = new URL(document.referrer).hostname.replace(/^www\./, '');
+                    if (host !== location.hostname) src = host;
+                } catch (e) { /* кривой referrer — считаем direct */ }
+            }
+            src = (src || '').toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 32) || 'direct';
+            localStorage.setItem('iv_src', src);
+            return src;
+        }
+        const SOURCE = getSource();
+
         function track(eventType, meta) {
             fetch('/api/track', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: SESSION_ID, event_type: eventType, meta: meta || null })
+                body: JSON.stringify({
+                    session_id: SESSION_ID,
+                    event_type: eventType,
+                    meta: Object.assign({ src: SOURCE }, meta || {})
+                })
             }).catch(() => {});  // аналитика не должна ломать UX
         }
 
@@ -349,6 +411,47 @@
 
         let currentIdeaId = null;
         let currentRating = 0;
+        let currentVerdict = null;
+
+        // Вердикт — только строка, которая ЦЕЛИКОМ равна «Вердикт: X».
+        // Просто искать слова нельзя: они встречаются в тексте разбора («нет условий для
+        // PROCEED») и в цитатах идеи — иначе можно подделать вердикт, вписав его в идею.
+        function extractVerdict(text) {
+            const found = [...text.matchAll(/^\s*\**\s*(?:Вердикт|Verdict)\s*:\s*\**\s*(KILL|PIVOT|PROCEED)\s*\**\s*\.?\s*$/gim)];
+            return found.length ? found[found.length - 1][1].toUpperCase() : null;
+        }
+
+        // Заголовок оффера зависит от вердикта: разное предложение для «закрывать» и «идти»
+        // Из разбора достаём то, что модель не смогла проверить: сначала «Принято на веру»,
+        // если пусто — «Чего не хватает до PROCEED». Это и есть предмет платной части.
+        function extractGaps(text) {
+            const patterns = [
+                /^\s*\**\s*(?:Принято на веру|Taken on trust)\s*:\s*\**\s*([\s\S]+?)(?=\n\s*\n|\n\s*\**\s*(?:Вердикт|Verdict)\s*:)/im,
+                /^\s*\**\s*(?:Чего не хватает до PROCEED|Missing for PROCEED)\s*:\s*\**\s*([\s\S]+?)(?=\n\s*\n|$)/im
+            ];
+            for (const re of patterns) {
+                const m = text.match(re);
+                if (!m) continue;
+                const v = m[1].trim().replace(/\s+/g, ' ').replace(/\*\*/g, '');
+                if (v && !/^(ничего|нет|—|-|нечего|nothing|none)\.?$/i.test(v)) return v;
+            }
+            return null;
+        }
+
+        function fillOfferGaps(text) {
+            const box = document.getElementById('offerGaps');
+            const gaps = extractGaps(text);
+            if (!gaps) { box.classList.add('hidden'); return; }
+            // textContent, а не innerHTML: это текст от модели
+            document.getElementById('offerGapsText').textContent = gaps;
+            box.classList.remove('hidden');
+        }
+
+        function setOfferTitle() {
+            const suffix = currentVerdict === 'KILL' ? 'Kill'
+                         : currentVerdict === 'PROCEED' ? 'Proceed' : 'Pivot';
+            document.getElementById('offerTitle').textContent = t('offerTitle' + suffix);
+        }
 
         const ideaForm = document.getElementById('ideaForm');
         const ideaInput = document.getElementById('idea');
@@ -431,7 +534,8 @@
 
                 if (!response.ok) {
                     let detail = t('errAnalyze');
-                    try { const data = await response.json(); detail = data.detail || detail; } catch (e) {}
+                    // detail бывает не строкой (ошибка валидации) — тогда показываем общий текст
+                    try { const data = await response.json(); if (typeof data.detail === 'string') detail = data.detail; } catch (e) {}
                     throw new Error(detail);
                 }
 
@@ -452,7 +556,11 @@
                     rawEl.textContent = full;
                 }
 
-                displayAnalysis(full);
+                full = localizeLabels(full);
+                currentVerdict = extractVerdict(full);
+                displayAnalysis(addVerdictGloss(full));
+                fillOfferGaps(full);
+                setOfferTitle();
                 document.getElementById('offerCard').classList.remove('hidden');
                 reviewFormCard.classList.remove('hidden');
                 await loadReviews();
@@ -461,6 +569,31 @@
                 showError(t('errPrefix') + err.message, errorMessage);
             }
         });
+
+        // Модель иногда копирует служебные метки из шаблона промпта по-английски,
+        // хотя весь отчёт русский. Чиним на месте: промпт направляет, это страхует.
+        // Русский язык узнаём по буквам ы/э — их нет в украинском/болгарском/сербском,
+        // чтобы не подменять метки в нерусском кириллическом отчёте (в русском их 100+).
+        function localizeLabels(text) {
+            const ruMarkers = (text.match(/[ыэ]/gi) || []).length;
+            if (ruMarkers < 10) return text;  // не русский отчёт — не трогаем метки
+            return text
+                .replace(/^(\s*\**\s*)Taken on trust:/gim, '$1Принято на веру:')
+                .replace(/^(\s*\**\s*)Verdict:/gim, '$1Вердикт:')
+                .replace(/^(\s*\**\s*)Missing for PROCEED:/gim, '$1Чего не хватает до PROCEED:')
+                .replace(/\bConfidence:/g, 'Уверенность:')
+                .replace(/\bValidate first:/g, 'Что проверить первым:');
+        }
+
+        // Люди читают PIVOT как «всё переделывай» — поясняем прямо под вердиктом.
+        // Применяется только к тексту для показа, парсер вердикта работает до этого.
+        function addVerdictGloss(text) {
+            const gloss = { KILL: t('glossKill'), PIVOT: t('glossPivot'), PROCEED: t('glossProceed') };
+            return text.replace(
+                /^(\s*\**\s*(?:Вердикт|Verdict)\s*:\s*\**\s*(KILL|PIVOT|PROCEED)\s*\**\s*\.?\s*)$/gim,
+                (m, line, word) => `${line}\n\n<span class="verdict-gloss">${gloss[word.toUpperCase()]}</span>`
+            );
+        }
 
         function displayAnalysis(text) {
             const sections = text.split('###').slice(1);
@@ -521,7 +654,7 @@
 
                 if (!response.ok) {
                     const data = await response.json();
-                    throw new Error(data.detail || t('reviewErr'));
+                    throw new Error(typeof data.detail === 'string' ? data.detail : t('reviewErr'));
                 }
 
                 showSuccess(t('reviewOk'), reviewSuccessMessage);
@@ -537,7 +670,16 @@
             }
         });
 
+        // Публичный показ отзывов выключен: пока их мало и они про баги, а не про
+        // впечатления — как соц-док это работает против нас. Форму не трогаем,
+        // фидбек продолжаем собирать. Вернуть = поставить true.
+        const SHOW_PUBLIC_REVIEWS = false;
+
         async function loadReviews() {
+            if (!SHOW_PUBLIC_REVIEWS) {
+                reviewsCard.classList.add('hidden');
+                return;
+            }
             try {
                 // Все отзывы (соц-док), показываем и на свежей странице, не только после анализа
                 const response = await fetch('/api/reviews');
@@ -619,7 +761,7 @@
         const offerEmailSuccess = document.getElementById('offerEmailSuccess');
 
         offerCtaBtn.addEventListener('click', () => {
-            track('cta_click', { idea_id: currentIdeaId });
+            track('cta_click', { idea_id: currentIdeaId, verdict: currentVerdict });
             offerEmailBlock.classList.remove('hidden');
             offerEmail.focus();
         });
@@ -649,6 +791,15 @@
         applyLang(LANG);
         document.querySelectorAll('.lang-btn').forEach(b => {
             b.addEventListener('click', () => applyLang(b.dataset.lang));
+        });
+
+        // «подробнее» у формы раскрывает блок про данные внизу и скроллит к нему
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.privacy-link')) return;
+            e.preventDefault();
+            const box = document.querySelector('.privacy');
+            box.open = true;
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
 
         // Показать отзывы (соц-док) сразу при загрузке страницы

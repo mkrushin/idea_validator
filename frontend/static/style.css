@@ -461,6 +461,86 @@ textarea {
     animation: slideDown 0.3s ease-out;
 }
 
+.offer-gaps {
+    background: var(--surface-alt);
+    border-left: 3px solid var(--warm-amber);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 18px 0;
+}
+
+.offer-gaps-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.offer-gaps-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.offer-gaps-after {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.verdict-gloss {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    border-left: 2px solid var(--bright-emerald);
+    padding-left: 12px;
+    margin: 4px 0;
+}
+
+.site-footer {
+    margin: 48px 0 32px;
+    text-align: center;
+}
+
+.privacy summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    display: inline-block;
+    padding: 6px 12px;
+}
+
+.privacy summary:hover {
+    color: var(--text-primary);
+}
+
+.privacy-body {
+    max-width: 620px;
+    margin: 12px auto 0;
+    text-align: left;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.privacy-body p {
+    margin-bottom: 10px;
+}
+
+.form-hint a,
+.privacy-body a {
+    color: var(--bright-emerald);
+}
+
+.form-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
 .char-count {
     font-size: 0.8rem;
     color: var(--text-secondary);
@@ -667,6 +747,10 @@ strong {
 .offer-badge { display: inline-block; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--bright-emerald, #00D084); margin-bottom: 8px; }
 .offer-price { color: var(--bright-emerald, #00D084); }
 .offer-lead { color: var(--text-secondary, #A1A5B0); margin-bottom: 20px; }
+.offer-list { margin-bottom: 20px; }
+.offer-list p { color: var(--text-secondary, #A1A5B0); margin-bottom: 12px; line-height: 1.55; }
+.offer-list strong { color: var(--light-gray, #E8EAED); }
+.offer-terms { color: var(--text-secondary, #A1A5B0); font-size: 0.92rem; margin-bottom: 20px; }
 .offer-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
 .offer-col h3 { font-size: 1rem; margin-bottom: 8px; }
 .offer-col ul { margin: 0; padding-left: 18px; color: var(--text-secondary, #A1A5B0); }
