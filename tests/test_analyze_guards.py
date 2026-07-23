@@ -41,6 +41,27 @@ def test_analyze_global_limit_counts_sessionless(client, monkeypatch):
     assert r.status_code == 429
 
 
+def test_short_idea_returns_readable_string_error(client):
+    # Pydantic отдал бы detail списком объектов — фронт показал бы "[object Object]"
+    r = client.post("/api/analyze", json={"idea": "мой сайт example.com"})
+    assert r.status_code == 422
+    assert isinstance(r.json()["detail"], str)
+    assert "минимум 50" in r.json()["detail"]
+
+
+def test_long_idea_returns_readable_string_error(client):
+    r = client.post("/api/analyze", json={"idea": "а" * 5100})
+    assert r.status_code == 422
+    assert isinstance(r.json()["detail"], str)
+    assert "максимум 5000" in r.json()["detail"]
+
+
+def test_short_review_returns_readable_string_error(client):
+    r = client.post("/api/reviews", json={"idea_id": 1, "text": "мало", "rating": 5})
+    assert r.status_code == 422
+    assert isinstance(r.json()["detail"], str)
+
+
 def test_analyze_429_does_not_create_idea(client, monkeypatch):
     import main, db
     monkeypatch.setattr(main, "DAILY_GLOBAL_LIMIT", 1)

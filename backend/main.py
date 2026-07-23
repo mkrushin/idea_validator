@@ -1,7 +1,8 @@
 import os
 import sys
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 
@@ -25,6 +26,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(RequestValidationError)
+async def validation_error_handler(request: Request, exc: RequestValidationError):
+    """Pydantic кладёт в detail список объектов, а фронт ждёт строку и печатает [object Object].
+    Приводим к одной понятной фразе."""
+    err = (exc.errors() or [{}])[0]
+    ctx = err.get("ctx", {})
+    kind = err.get("type")
+    if kind == "string_too_short":
+        msg = f"Слишком короткий текст: минимум {ctx.get('min_length', '?')} символов"
+    elif kind == "string_too_long":
+        msg = f"Слишком длинный текст: максимум {ctx.get('max_length', '?')} символов"
+    elif kind == "string_pattern_mismatch":
+        msg = "Неверный формат email"
+    else:
+        msg = "Проверьте введённые данные"
+    return JSONResponse(status_code=422, content={"detail": msg})
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
